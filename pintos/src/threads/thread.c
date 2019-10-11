@@ -24,6 +24,10 @@
    that are ready to run but not actually running. */
 static struct list ready_list;
 
+static struct list wait_list;
+
+static struct semaphore wait_sema;
+
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
@@ -92,6 +96,9 @@ thread_init (void)
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&all_list);
+
+  list_init(&wait_list);
+  sema_init(&wait_sema, 1);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -312,6 +319,53 @@ thread_yield (void)
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
+}
+
+bool
+compare_wake_ticks(const struct list_elem *a,
+                             const struct list_elem *b,
+                             void *aux UNUSED){
+  struct thread *t1 = list_entry(a,struct thread, elem);
+  struct thread *t2 = list_entry(b,struct thread, elem);
+  return t1->wake_up_ticks < t2->wake_up_ticks;
+}
+
+
+/* Put a thread to sleep for t timer ticks by putting it into a wait queue
+   should be woken after wake up ticks */
+void
+thread_sleep_wait (int64_t ticks) 
+{
+  struct thread *cur = thread_current ();
+  enum intr_level old_level;
+  
+  ASSERT (!intr_context ());
+
+  cur->wake_up_ticks = ticks;
+
+  if (cur != idle_thread) {
+    sema_down(&wait_sema);
+    list_insert_ordered(&wait_list, &cur->elem, compare_wake_ticks, NULL);
+    sema_up(&wait_sema);
+  }
+  
+  old_level = intr_disable ();
+  thread_block();
+  intr_set_level (old_level);
+}
+
+void
+thread_wake_up() {
+  int64_t cur_ticks = timer_ticks();
+  struct thread *t = NULL;
+
+  if(!list_empty(&wait_list)) {
+    t = list_entry (list_front (&wait_list), struct thread, elem);
+    if(cur_ticks >= t->wake_up_ticks) {
+      list_pop_front(&wait_list);
+      thread_unblock(t);
+    }
+  }
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
