@@ -24,6 +24,8 @@
    that are ready to run but not actually running. */
 static struct list ready_list;
 
+/*Lit of processes that have called timer_sleep(ticks). These processes
+are blocked till the number of ticks have elapsed */
 static struct list wait_list;
 
 static struct semaphore wait_sema;
@@ -211,6 +213,16 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+
+/*Sorts the thread list in the descending order of priorities*/
+bool 
+priority_ordering_func (const struct list_elem *target, const struct list_elem *element, void *aux UNUSED)
+{
+  ASSERT (target != NULL);
+  ASSERT (element != NULL);
+  return list_entry (target, struct thread, elem)->priority > list_entry (element, struct thread, elem)->priority;
+}
+
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
 
@@ -244,8 +256,13 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
+  //list_push_back (&ready_list, &t->elem);
+  list_insert_ordered (&ready_list, &t->elem, priority_ordering_func, NULL);
   t->status = THREAD_READY;
+  //preempt the running thread if the unblocked thread has greater priority.
+  //If the running thread is idle(pid=2),it should be blocked and not preempted.
+  if(thread_current()->tid != 2 && t->priority > thread_get_priority())
+    thread_yield();
   intr_set_level (old_level);
 }
 
@@ -315,7 +332,7 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem);
+    list_insert_ordered (&ready_list, &cur->elem, priority_ordering_func, NULL);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -390,6 +407,12 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
+  if(!list_empty(&ready_list))
+  {
+    struct thread *top_elem = list_entry (list_front(&ready_list), struct thread, elem);
+    if(top_elem->priority > thread_get_priority())
+      thread_yield();
+  }
 }
 
 /* Returns the current thread's priority. */
