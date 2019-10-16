@@ -210,6 +210,12 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
+
+  //preempt the running thread if the unblocked thread has greater priority.
+  //If the running thread is idle(pid=2),it should be blocked and not preempted.
+  if(thread_current()->tid != 2 && t->priority > thread_get_priority())
+    thread_yield();
+
   return tid;
 }
 
@@ -259,10 +265,6 @@ thread_unblock (struct thread *t)
   //list_push_back (&ready_list, &t->elem);
   list_insert_ordered (&ready_list, &t->elem, priority_ordering_func, NULL);
   t->status = THREAD_READY;
-  //preempt the running thread if the unblocked thread has greater priority.
-  //If the running thread is idle(pid=2),it should be blocked and not preempted.
-  if(thread_current()->tid != 2 && t->priority > thread_get_priority())
-    thread_yield();
   intr_set_level (old_level);
 }
 
@@ -381,6 +383,11 @@ thread_wake_up() {
     if(cur_ticks >= t->wake_up_ticks) {
       list_pop_front(&wait_list);
       thread_unblock(t);
+
+  //preempt the running thread if the unblocked thread has greater priority.
+  //If the running thread is idle(pid=2),it should be blocked and not preempted.
+  if(thread_current()->tid != 2 && t->priority > thread_get_priority())
+    thread_yield();
     }
   }
 }
