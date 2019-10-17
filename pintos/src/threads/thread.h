@@ -91,6 +91,9 @@ struct thread
     struct list_elem allelem;           /* List element for all threads list. */
 
     int64_t wake_up_ticks;
+    struct list lock_list;
+    struct lock *lock_to_acquire;
+    int64_t init_priority;
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */

@@ -546,11 +546,14 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+  t->init_priority = priority; //keep original priority into init_priority
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
-  intr_set_level (old_level);
+  intr_set_level (old_level);  
+  
+  list_init(&t->lock_list); //initialise thread's lock list -> if not kernel panic error
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and

@@ -204,9 +204,23 @@ lock_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
+  struct thread *cur = thread_current ();
 
+  if(lock->holder == NULL) { //if no lock is held by any thread
+    cur->lock_to_acquire = lock; //check if this is needed ?
+    lock->holder = cur;
+    lock->max_priority = cur->priority;
+  } else { // if other thread holds the lock 
+    cur->lock_to_acquire = lock;
+    if(cur->priority > lock->max_priority) {  //donate the priority
+      lock->holder->priority = cur->priority; 
+    }
+  }
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
+  cur->lock_to_acquire = NULL;
+  //list_push_back (&sema->waiters, &thread_current ()->elem);
+  list_push_back (&cur->lock_list, &lock->elem);
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -229,6 +243,18 @@ lock_try_acquire (struct lock *lock)
   return success;
 }
 
+/* Returns true if value A is less than value B, false
+   otherwise. */
+static bool
+max_next_lock_priority (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED) 
+{
+  const struct lock *a = list_entry (a_, struct lock, elem);
+  const struct lock *b = list_entry (b_, struct lock, elem);
+  
+  return a->max_priority < b->max_priority;
+}
+
 /* Releases LOCK, which must be owned by the current thread.
 
    An interrupt handler cannot acquire a lock, so it does not
@@ -239,7 +265,15 @@ lock_release (struct lock *lock)
 {
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
+  struct thread *cur = thread_current ();
 
+  list_remove(&lock->elem);
+  //lock->holder = NULL;
+  if(list_empty(&cur->lock_list)) { //if lock is free change thread's priority to original
+    cur->priority = cur->init_priority;
+  } else { //if it is not free update the thread's priority to maximum priority of waiting threads 
+    cur->priority = list_entry(list_max(&cur->lock_list, max_next_lock_priority, NULL), struct lock, elem)->max_priority;
+  }
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }
