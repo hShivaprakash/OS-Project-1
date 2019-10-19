@@ -102,6 +102,18 @@ sema_try_down (struct semaphore *sema)
   return success;
 }
 
+/* Returns true if priority of A is greater than priority of B, false
+   otherwise. */
+static bool
+sort_order_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED) 
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+  
+  return a->priority > b->priority;
+}
+
 /* Up or "V" operation on a semaphore.  Increments SEMA's value
    and wakes up one thread of those waiting for SEMA, if any.
 
@@ -116,6 +128,8 @@ sema_up (struct semaphore *sema)
   ASSERT (sema != NULL);
 
   old_level = intr_disable ();
+  //sort is needed to handle priority_donate_sema
+  list_sort (&sema->waiters, sort_order_less, NULL);
   if (!list_empty (&sema->waiters)) 
   {
     top =  (list_entry (list_pop_front (&sema->waiters),
