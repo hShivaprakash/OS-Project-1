@@ -214,6 +214,7 @@ lock_acquire (struct lock *lock)
     cur->lock_to_acquire = lock;
     if(cur->priority > lock->max_priority) {  //donate the priority
       lock->holder->priority = cur->priority; 
+      lock->max_priority = cur->priority;
     }
   }
   sema_down (&lock->semaphore);
@@ -266,13 +267,19 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   struct thread *cur = thread_current ();
-
+  int max_lock_list_priority;
   list_remove(&lock->elem);
   //lock->holder = NULL;
   if(list_empty(&cur->lock_list)) { //if lock is free change thread's priority to original
     cur->priority = cur->init_priority;
   } else { //if it is not free update the thread's priority to maximum priority of waiting threads 
-    cur->priority = list_entry(list_max(&cur->lock_list, max_next_lock_priority, NULL), struct lock, elem)->max_priority;
+    max_lock_list_priority = list_entry(list_max(&cur->lock_list, max_next_lock_priority, NULL), struct lock, elem)->max_priority;
+    if(max_lock_list_priority > cur->init_priority) { //if the thread has a lower priority then it's priority needs to be updated 
+      cur->priority = max_lock_list_priority;
+    } else { //keep init priority because thread holding the lock has higher priority then the locks that are waiting
+      cur->priority = cur->init_priority;
+    }
+    lock->max_priority = cur->priority;
   }
   lock->holder = NULL;
   sema_up (&lock->semaphore);
