@@ -266,7 +266,7 @@ lock_try_acquire (struct lock *lock)
 
 /* Returns true if value A is less than value B, false
    otherwise. */
-static bool
+bool
 max_next_lock_priority (const struct list_elem *a_, const struct list_elem *b_,
             void *aux UNUSED) 
 {

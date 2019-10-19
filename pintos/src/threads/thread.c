@@ -413,12 +413,25 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
+  struct thread *cur = thread_current ();
+  int max_lock_list_priority;
+  cur->priority = new_priority;
+  cur->init_priority = new_priority;
   if(!list_empty(&ready_list))
   {
     struct thread *top_elem = list_entry (list_front(&ready_list), struct thread, elem);
     if(top_elem->priority > thread_get_priority())
       thread_yield();
+  }
+  if(list_empty(&cur->lock_list)) { //if lock is free change thread's priority to original
+    cur->priority = cur->init_priority;
+  } else { //if it is not free update the thread's priority to maximum priority of waiting threads 
+    max_lock_list_priority = list_entry(list_max(&cur->lock_list, max_next_lock_priority, NULL), struct lock, elem)->max_priority;
+    if(max_lock_list_priority > cur->init_priority) { //if the thread has a lower priority then it's priority needs to be updated 
+      cur->priority = max_lock_list_priority;
+    } else { //keep init priority because thread holding the lock has higher priority then the locks that are waiting
+      cur->priority = cur->init_priority;
+    }
   }
 }
 
