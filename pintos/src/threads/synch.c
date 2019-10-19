@@ -205,6 +205,8 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
   struct thread *cur = thread_current ();
+  struct thread *ptr = cur;
+  struct lock *lock_ptr = lock;
 
   if(lock->holder == NULL) { //if no lock is held by any thread
     cur->lock_to_acquire = lock; //check if this is needed ?
@@ -212,9 +214,13 @@ lock_acquire (struct lock *lock)
     lock->max_priority = cur->priority;
   } else { // if other thread holds the lock 
     cur->lock_to_acquire = lock;
-    if(cur->priority > lock->max_priority) {  //donate the priority
-      lock->holder->priority = cur->priority; 
-      lock->max_priority = cur->priority;
+    while(ptr->lock_to_acquire != NULL) { //iterate till a thread is not waiting to acquire a resource
+      ptr = ptr->lock_to_acquire->holder;
+      if(cur->priority > ptr->priority) { //donate the priority
+        ptr->priority = cur->priority; 
+        lock_ptr->max_priority = cur->priority;
+      }
+      lock_ptr = lock_ptr->holder->lock_to_acquire;
     }
   }
   sema_down (&lock->semaphore);
