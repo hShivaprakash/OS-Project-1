@@ -94,6 +94,8 @@ struct thread
     struct list lock_list;
     struct lock *lock_to_acquire;
     int64_t init_priority;
+    int recent_cpu;
+    int nice;
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -136,6 +138,8 @@ typedef void thread_action_func (struct thread *t, void *aux);
 void thread_foreach (thread_action_func *, void *);
 bool priority_ordering_func (const struct list_elem *, const struct list_elem *, void *aux UNUSED);
 
+bool compare_wake_ticks(const struct list_elem *, const struct list_elem *b, void *aux UNUSED);
+
 int thread_get_priority (void);
 void thread_set_priority (int);
 
@@ -147,5 +151,11 @@ int thread_get_load_avg (void);
 /*New functions added*/
 void thread_sleep_wait (int64_t ticks);
 void thread_wake_up (void);
+
+void calculate_priority (struct thread *t, void *aux);
+void calculate_recent_cpu (struct thread *t, void *aux);
+void calculate_load_avg (void);
+void increment_recent_cpu (void);
+void recent_cpu_priority_for_all (void);
 
 #endif /* threads/thread.h */
