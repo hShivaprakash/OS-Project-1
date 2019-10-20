@@ -8,11 +8,11 @@
 #include "threads/interrupt.h"
 #include "threads/intr-stubs.h"
 #include "threads/palloc.h"
-
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "threads/fixed-point.h"
+#include "../devices/timer.h"
 
 #ifdef USERPROG
 #include "userprog/process.h"
@@ -389,7 +389,7 @@ thread_wake_up() {
   int64_t cur_ticks = timer_ticks();
   struct thread *t = NULL;
 
-  if(!list_empty(&wait_list)) {
+  while(!list_empty(&wait_list)) {
     t = list_entry (list_front (&wait_list), struct thread, elem);
     if(cur_ticks >= t->wake_up_ticks) {
       list_pop_front(&wait_list);
@@ -407,6 +407,8 @@ thread_wake_up() {
     If the running thread is idle(pid=2),it should be blocked and not preempted.*/
     else if (t!=idle_thread && t->priority> thread_get_priority())
       thread_yield();
+    } else { 
+      break;
     }
   }
 }
