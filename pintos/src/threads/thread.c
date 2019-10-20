@@ -36,6 +36,7 @@ are blocked till the number of ticks have elapsed */
 static struct list wait_list;
 
 static struct semaphore wait_sema;
+static struct semaphore mutex;
 
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
@@ -109,6 +110,7 @@ thread_init (void)
 
   list_init(&wait_list);
   sema_init(&wait_sema, 1);
+  sema_init(&mutex, 1);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -441,6 +443,7 @@ thread_set_priority (int new_priority)
   int max_lock_list_priority;
   cur->priority = new_priority;
   cur->init_priority = new_priority;
+  sema_down(&mutex);
   if(!list_empty(&ready_list))
   {
     struct thread *top_elem = list_entry (list_front(&ready_list), struct thread, elem);
@@ -467,6 +470,7 @@ thread_set_priority (int new_priority)
       cur->priority = cur->init_priority;
     }
   }
+  sema_up(&mutex);
 }
 
 /* Returns the current thread's priority. */
