@@ -29,6 +29,8 @@ tid_t
 process_execute (const char *file_name) 
 {
   char *fn_copy;
+  char *command;
+  char *next_args;
   tid_t tid;
 
   /* Make a copy of FILE_NAME.
@@ -37,9 +39,10 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
+  command = strtok_r(file_name, " ", &next_args);
 
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (command, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
   return tid;
@@ -88,6 +91,7 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+  while(true) {}
   return -1;
 }
 
@@ -195,7 +199,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp);
+static bool setup_stack (void **esp, char *file_name);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -220,12 +224,19 @@ load (const char *file_name, void (**eip) (void), void **esp)
   if (t->pagedir == NULL) 
     goto done;
   process_activate ();
+  char  * exec_name;
+  char * next_args;
+  char * fn_copy = palloc_get_page (0);
+  if (fn_copy == NULL)
+    return TID_ERROR;
+  strlcpy (fn_copy, file_name, PGSIZE);
+  exec_name = strtok_r(fn_copy, " ", &next_args);
 
   /* Open executable file. */
-  file = filesys_open (file_name);
+  file = filesys_open (exec_name);
   if (file == NULL) 
     {
-      printf ("load: %s: open failed\n", file_name);
+      printf ("load: %s: open failed\n", exec_name);
       goto done; 
     }
 
@@ -238,7 +249,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
       || ehdr.e_phentsize != sizeof (struct Elf32_Phdr)
       || ehdr.e_phnum > 1024) 
     {
-      printf ("load: %s: error loading executable\n", file_name);
+      printf ("load: %s: error loading executable\n", exec_name);
       goto done; 
     }
 
@@ -302,7 +313,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp))
+  if (!setup_stack (esp, file_name))
     goto done;
 
   /* Start address. */
@@ -427,7 +438,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp) 
+setup_stack (void **esp, char *file_name) 
 {
   uint8_t *kpage;
   bool success = false;
@@ -437,7 +448,89 @@ setup_stack (void **esp)
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
+      {
         *esp = PHYS_BASE;
+
+        /*array of strings to hold the parsed command and arguments */
+        char *args[25];
+
+        char *arg;
+        char *next_args;
+        
+        int i = 0, j = 0, len = 0, total_len = 0, argc = 0;
+        
+        /*save the value of command */
+        args[argc] = strtok_r(file_name, " ", &next_args);
+        argc += 1;
+
+        /*parse the arguments to the command  */
+        while(true)
+        {
+          arg = (char *)strtok_r(NULL, " ", &next_args);
+          if(arg == NULL)
+            break;
+          args[argc] = arg;
+          argc += 1;
+        }
+
+        /*array of pointers to strings to keep traack of the addresses of the parsed arguments */
+        char ** argv = (char *)malloc(argc*sizeof(char *));
+        for(i= argc-1; i >= 0; i--)
+        {
+          printf("%s", args[i]);
+          len = strlen(args[i])+1;
+          total_len += len;
+          *esp -= len;
+          argv[j++] = *esp;
+          memcpy(*esp, args[i], len);
+        }
+
+        /*word align */
+        if(total_len % 4 != 0)
+        {
+          len = 4 - (total_len % 4);
+          total_len += len;
+          *esp -= len;
+          memset(*esp, 0, len);
+        }
+
+        /*value of argv[argc] */
+        argv[j] = *esp;
+        //total_len += 4;
+        *esp -= 4;
+        memset(*esp, 0, 4);
+
+        /*push the addresses of all the arguments onto the stack */
+        for(i=0; i<argc; i++)
+        {
+          len = sizeof(char *);
+          *esp -= len;
+          //total_len += len;
+          memcpy(*esp, &argv[i], len);
+        }
+        
+        /*push address of argv onto the stack */
+        len = sizeof(char **);
+        *esp -= len;
+        //total_len += len;
+        memcpy(*esp, &(*esp), len);
+
+        /*push the value of argc onto the stack */
+        len = sizeof(int);
+        *esp -= len;
+        //total_len += len;
+        memset(*esp, argc, len);
+
+        /*push dummy return address onto the stack */
+        len = sizeof(void *);
+        *esp -= len;
+        //total_len += len;
+        memset(*esp, 0, len);
+
+        free(argv);
+
+        //hex_dump(*esp, *esp, total_len, true);
+      }
       else
         palloc_free_page (kpage);
     }
