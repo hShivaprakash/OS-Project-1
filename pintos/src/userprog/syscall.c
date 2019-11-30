@@ -3,7 +3,10 @@
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
-
+#include "threads/vaddr.h"
+#include "userprog/pagedir.h"
+#include "../devices/shutdown.h"
+#include "threads/malloc.h"
 static void syscall_handler (struct intr_frame *);
 void halt (void);
 void exit (int);
@@ -34,7 +37,10 @@ halt (void) {
 
 void 
 exit (int status) {
-  printf ("exit System call!\n");
+  struct thread *t = thread_current();
+  t->status = status;
+  printf ("%s: exit(%d)\n",thread_current()->name, status);
+  thread_exit();
 }
 
 pid_t 
@@ -117,9 +123,8 @@ bool is_address_valid(void *addr) {
 }
 
 static void
-syscall_handler (struct intr_frame *f UNUSED) 
+syscall_handler (struct intr_frame *f) 
 {
-  printf ("system call!\n");
   int *esp = f->esp;
   if(!are_addresses_valid(esp, esp+1, esp+2, esp+3)) {
     exit(-1);
