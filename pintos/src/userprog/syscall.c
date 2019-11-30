@@ -82,8 +82,16 @@ open (const char *file) {
 
 int 
 filesize (int fd) {
-  printf ("filesize System call!\n");
-  return 1;
+  struct file *fptr;
+  int32_t file_size;
+  fptr = get_file_ptr_using_fd(fd);
+  if(fptr != NULL) {
+    lock_acquire(&mutex);
+    file_size = file_length(fptr);
+    lock_release(&mutex);
+    return file_size;
+  }
+  return -1;
 }
 
 int 
