@@ -90,6 +90,7 @@ struct thread
     int priority;                       /* Priority. */
     struct list_elem allelem;           /* List element for all threads list. */
 
+    struct list fd_mapper_list;
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
@@ -101,6 +102,12 @@ struct thread
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
+
+struct fdesc {
+  int fd_value; /*file descriptor value*/
+  struct list_elem elem; /*List Element*/
+  struct file *fptr; /*File pointer to access the file*/
+};
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.

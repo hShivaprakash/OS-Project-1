@@ -7,6 +7,9 @@
 #include "userprog/pagedir.h"
 #include "../devices/shutdown.h"
 #include "threads/malloc.h"
+#include "threads/synch.h"
+#include "filesys/file.h"
+
 static void syscall_handler (struct intr_frame *);
 void halt (void);
 void exit (int);
@@ -23,11 +26,15 @@ unsigned tell (int);
 void close (int);
 bool are_addresses_valid(void *, void *, void *, void *);
 bool is_address_valid(void *addr);
+struct file * get_file_ptr_using_fd (int);
+
+struct lock mutex;
 
 void
 syscall_init (void) 
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
+  lock_init(&mutex);
 }
 
 void 
@@ -87,13 +94,25 @@ read (int fd, void *buffer, unsigned size) {
 
 int 
 write (int fd, const void *buffer, unsigned size) {
+  struct file *fptr;
+  int bytes_written = 0;
   if(buffer == NULL || !is_address_valid(buffer)) {
     exit(-1);
   } else if(fd == STDOUT_FILENO) {
     putbuf(buffer, size);
     return 1;
+  } else if(fd == STDIN_FILENO) {
+    return -1;
+  } else {
+    fptr = get_file_ptr_using_fd(fd);
+    if(fptr != NULL) {
+      lock_acquire(&mutex);
+      bytes_written = file_write(fptr, buffer, size);
+      lock_release(&mutex);
+      return bytes_written;
+    }
+    return -1;
   }
-  return -1;
 }
 
 void 
@@ -125,6 +144,22 @@ bool is_address_valid(void *addr) {
   return (
     (is_user_vaddr(addr) && pagedir_get_page(thread_current()->pagedir, addr))
   );
+}
+
+struct file * get_file_ptr_using_fd (int fd) {
+  struct thread *t = thread_current();
+  struct list_elem *e  = list_begin(&t->fd_mapper_list);
+  struct fdesc *file_desc_map;
+
+  if(!list_empty(&t->fd_mapper_list)) {
+    while(e != list_end(&t->fd_mapper_list)) {
+      file_desc_map = list_entry(e, struct fdesc, elem);
+      if(file_desc_map->fd_value == fd)
+        return file_desc_map->fptr;
+      e = list_next(e);
+    }
+  }
+  return NULL;
 }
 
 static void
