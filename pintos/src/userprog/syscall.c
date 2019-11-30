@@ -88,8 +88,24 @@ filesize (int fd) {
 
 int 
 read (int fd, void *buffer, unsigned size) {
-  printf ("read System call!\n");
-  return 1;
+  struct file *fptr;
+  int bytes_read = 0;
+  if(buffer == NULL || !is_address_valid(buffer)) {
+    exit(-1);
+  } else if(fd == STDOUT_FILENO) {
+    return -1;
+  } else if(fd == STDIN_FILENO) {
+    return input_getc();
+  } else {
+    fptr = get_file_ptr_using_fd(fd);
+    if(fptr != NULL) {
+      lock_acquire(&mutex);
+      bytes_read = file_read(fptr, buffer, size);
+      lock_release(&mutex);
+      return bytes_read;
+    }
+    return -1;
+  }
 }
 
 int 
