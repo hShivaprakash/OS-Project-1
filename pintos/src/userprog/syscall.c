@@ -165,7 +165,6 @@ write (int fd, const void *buffer, unsigned size) {
 void 
 seek (int fd, unsigned position) {
   struct file *fptr;
-  int32_t file_size;
   
   fptr = get_file_ptr_using_fd(fd);
 
@@ -176,11 +175,20 @@ seek (int fd, unsigned position) {
   }
 }
 
-unsigned 
+unsigned
 tell (int fd) {
-  printf ("tell System call!\n");
-  return fd;
-} 
+  struct file *fptr;
+  int32_t curr_pos = 0;
+  
+  fptr = get_file_ptr_using_fd(fd);
+
+  if(fptr != NULL) {
+    lock_acquire(&mutex);
+    curr_pos = file_tell(fptr);
+    lock_release(&mutex);
+  }
+  return -1;
+}
 
 void 
 close (int fd) {
