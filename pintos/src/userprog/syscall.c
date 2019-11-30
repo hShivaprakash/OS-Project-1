@@ -154,7 +154,7 @@ seek (int fd, unsigned position) {
   }
 }
 
-unsigned 
+unsigned
 tell (int fd) {
   struct file *fptr;
   int32_t curr_pos = 0;
@@ -166,7 +166,7 @@ tell (int fd) {
     curr_pos = file_tell(fptr);
     lock_release(&mutex);
   }
-  return curr_pos;
+  return -1;
 }
 
 void 
