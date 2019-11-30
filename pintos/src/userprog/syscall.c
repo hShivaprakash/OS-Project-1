@@ -84,7 +84,9 @@ int
 filesize (int fd) {
   struct file *fptr;
   int32_t file_size;
+
   fptr = get_file_ptr_using_fd(fd);
+  
   if(fptr != NULL) {
     lock_acquire(&mutex);
     file_size = file_length(fptr);
@@ -141,7 +143,16 @@ write (int fd, const void *buffer, unsigned size) {
 
 void 
 seek (int fd, unsigned position) {
-  printf ("seek System call!\n");
+  struct file *fptr;
+  int32_t file_size;
+  
+  fptr = get_file_ptr_using_fd(fd);
+
+  if(fptr != NULL) {
+    lock_acquire(&mutex);
+    file_seek(fptr, position);
+    lock_release(&mutex);
+  }
 }
 
 unsigned 
