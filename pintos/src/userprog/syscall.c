@@ -87,8 +87,13 @@ read (int fd, void *buffer, unsigned size) {
 
 int 
 write (int fd, const void *buffer, unsigned size) {
-  printf ("write System call!\n");
-  return 1;
+  if(buffer == NULL || !is_address_valid(buffer)) {
+    exit(-1);
+  } else if(fd == STDOUT_FILENO) {
+    putbuf(buffer, size);
+    return 1;
+  }
+  return -1;
 }
 
 void 
@@ -133,42 +138,58 @@ syscall_handler (struct intr_frame *f)
     case SYS_HALT:
       halt();
       break;
+
     case SYS_EXIT:
+      //printf("Exit\n");
       exit(*(esp + 1));
       break;
+
     case SYS_EXEC:
       f->eax = exec((char *) *(esp + 1));
       break;
+
     case SYS_WAIT:
+      //printf("Wait\n");
       f->eax = wait(*(esp + 1));
       break;
+
     case SYS_CREATE:
       f->eax = create((char *) *(esp + 1), *(esp + 2));
       break;
+
     case SYS_REMOVE:
       f->eax = remove((char *) *(esp + 1));
       break;
+
     case SYS_OPEN:
       f->eax = open((char *) *(esp + 1));
       break;
+
     case SYS_FILESIZE:
       f->eax = filesize(*(esp + 1));
       break;
+
     case SYS_READ:
       f->eax = read(*(esp + 1), (void *) *(esp + 2), *(esp + 3));
       break;
+
     case SYS_WRITE:
+      //printf("write:%d\n", *(esp + 1));
       f->eax = write(*(esp + 1), (void *) *(esp + 2), *(esp + 3));
       break;
+
     case SYS_SEEK:
       seek(*(esp + 1), *(esp + 2));
       break;
+
     case SYS_TELL:
       f->eax = tell(*(esp + 1));
       break;
+
     case SYS_CLOSE:
       close(*(esp + 1));
       break;
+
     default:
       break;
   }
