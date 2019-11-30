@@ -39,7 +39,7 @@ syscall_init (void)
 
 void 
 halt (void) {
-  printf ("halt System call!\n");
+  shutdown_power_off();
 }
 
 void 
