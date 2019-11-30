@@ -18,6 +18,8 @@ int write (int, const void *, unsigned);
 void seek (int, unsigned);
 unsigned tell (int);
 void close (int);
+bool are_addresses_valid(void *, void *, void *, void *);
+bool is_address_valid(void *addr);
 
 void
 syscall_init (void) 
@@ -99,11 +101,29 @@ close (int fd) {
   printf ("close System call!\n");
 }
 
+bool are_addresses_valid(void *addr, void *addr1, void *addr2, void *addr3) {
+  return (
+    (is_user_vaddr(addr) && pagedir_get_page(thread_current()->pagedir, addr)) &&
+    (is_user_vaddr(addr1) && pagedir_get_page(thread_current()->pagedir, addr1)) &&
+    (is_user_vaddr(addr2) && pagedir_get_page(thread_current()->pagedir, addr2)) &&
+    (is_user_vaddr(addr3) && pagedir_get_page(thread_current()->pagedir, addr3))
+  );
+}
+
+bool is_address_valid(void *addr) {
+  return (
+    (is_user_vaddr(addr) && pagedir_get_page(thread_current()->pagedir, addr))
+  );
+}
+
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
   printf ("system call!\n");
   int *esp = f->esp;
+  if(!are_addresses_valid(esp, esp+1, esp+2, esp+3)) {
+    exit(-1);
+  }
   switch (*esp) {
     case SYS_HALT:
       halt();
