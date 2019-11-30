@@ -64,14 +64,18 @@ wait (pid_t pid) {
 
 bool 
 create (const char *file, unsigned initial_size) {
-  printf ("create System call!\n");
-  return true;
+  lock_acquire(&mutex);
+  bool create_status = filesys_create(file, initial_size);
+  lock_release(&mutex);
+  return create_status;
 }
 
 bool 
 remove (const char *file) {
-  printf ("remove System call!\n");
-  return true;
+  lock_acquire(&mutex);
+  bool remove_status = filesys_remove(file);
+  lock_release(&mutex);
+  return remove_status;
 }
 
 int 
