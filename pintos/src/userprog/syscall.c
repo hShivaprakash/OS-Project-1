@@ -99,6 +99,7 @@ open (const char *file) {
   
   lock_acquire(&mutex);
   file_ptr = filesys_open(file);
+  lock_release(&mutex);
   if(file_ptr != NULL) {
     file_desc = malloc(sizeof(struct fdesc));
     file_desc->fptr = file_ptr;
