@@ -45,8 +45,21 @@ halt (void) {
 void 
 exit (int status) {
   struct thread *t = thread_current();
+  struct fdesc *file_desc_map;
+  struct list_elem *e;
   t->status = status;
   printf ("%s: exit(%d)\n",thread_current()->name, status);
+
+  if(!list_empty(&t->fd_mapper_list)) {
+    lock_acquire(&mutex);
+    while(!list_empty(&t->fd_mapper_list)) {
+      file_desc_map = list_entry(list_pop_back(&t->fd_mapper_list), struct fdesc, elem);
+      file_close(file_desc_map->fptr);
+      free(file_desc_map);
+    }
+    lock_release(&mutex);
+  }
+
   thread_exit();
 }
 
@@ -192,7 +205,25 @@ tell (int fd) {
 
 void 
 close (int fd) {
-  printf ("close System call!\n");
+  struct thread *t = thread_current();
+  struct fdesc *file_desc_map;
+  struct list_elem *e;
+
+  if(!list_empty(&t->fd_mapper_list)) {
+    e = list_begin(&t->fd_mapper_list);
+
+    while(e != list_end(&t->fd_mapper_list)) {
+      file_desc_map = list_entry(e, struct fdesc, elem);
+      if(file_desc_map->fd_value == fd) {
+        lock_acquire(&mutex);
+        list_remove(e);
+        file_close(file_desc_map->fptr);
+        free(file_desc_map);
+        lock_release(&mutex);
+      }
+      e = list_next(e);
+    }
+  }
 }
 
 bool are_addresses_valid(void *addr, void *addr1, void *addr2, void *addr3) {
