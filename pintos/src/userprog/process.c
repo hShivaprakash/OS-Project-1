@@ -477,7 +477,7 @@ setup_stack (void **esp, char *file_name)
         char ** argv = (char *)malloc(argc*sizeof(char *));
         for(i= argc-1; i >= 0; i--)
         {
-          printf("%s", args[i]);
+          //printf("%s", args[i]);
           len = strlen(args[i])+1;
           total_len += len;
           *esp -= len;
@@ -496,7 +496,7 @@ setup_stack (void **esp, char *file_name)
 
         /*value of argv[argc] */
         argv[j] = *esp;
-        //total_len += 4;
+        total_len += 4;
         *esp -= 4;
         memset(*esp, 0, 4);
 
@@ -505,27 +505,28 @@ setup_stack (void **esp, char *file_name)
         {
           len = sizeof(char *);
           *esp -= len;
-          //total_len += len;
+          total_len += len;
           memcpy(*esp, &argv[i], len);
         }
         
         /*push address of argv onto the stack */
+        arg = *esp;
         len = sizeof(char **);
         *esp -= len;
-        //total_len += len;
-        memcpy(*esp, &(*esp), len);
+        total_len += len;
+        memcpy(*esp, &arg, len);
 
         /*push the value of argc onto the stack */
         len = sizeof(int);
         *esp -= len;
-        //total_len += len;
-        memset(*esp, argc, len);
+        total_len += len;
+        memset(*esp, argc, 1);
 
         /*push dummy return address onto the stack */
         len = sizeof(void *);
         *esp -= len;
-        //total_len += len;
-        memset(*esp, 0, len);
+        total_len += len;
+        memset(*esp, 0, 1);
 
         free(argv);
 
