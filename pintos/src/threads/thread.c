@@ -197,7 +197,9 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
+  
 
+  list_init(&t->fd_mapper_list);
   /* Add to run queue. */
   thread_unblock (t);
 

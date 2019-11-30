@@ -80,8 +80,25 @@ remove (const char *file) {
 
 int 
 open (const char *file) {
-  printf ("open System call!\n");
-  return 1;
+  struct file *file_ptr;
+  struct thread *t = thread_current();
+  struct fdesc *file_desc;
+  
+  lock_acquire(&mutex);
+  file_ptr = filesys_open(file);
+  if(file_ptr != NULL) {
+    file_desc = malloc(sizeof(struct fdesc));
+    file_desc->fptr = file_ptr;
+    if(list_empty(&t->fd_mapper_list)) {
+      file_desc->fd_value = 2;
+    } else {
+      file_desc->fd_value = list_entry(list_back(&t->fd_mapper_list), struct fdesc, elem)->fd_value + 1;
+    }
+    list_push_back(&t->fd_mapper_list, &file_desc->elem);
+    return file_desc->fd_value; 
+  }
+  return -1;
+ 
 }
 
 int 
