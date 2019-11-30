@@ -91,7 +91,11 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+<<<<<<< HEAD
   while(true) {}
+=======
+  while(true){}
+>>>>>>> origin/proj-2-dev-shiv
   return -1;
 }
 
@@ -448,6 +452,7 @@ setup_stack (void **esp, char *file_name)
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
+<<<<<<< HEAD
       {
         *esp = PHYS_BASE;
 
@@ -531,6 +536,9 @@ setup_stack (void **esp, char *file_name)
 
         //hex_dump(*esp, *esp, total_len, true);
       }
+=======
+        *esp = PHYS_BASE - 12;
+>>>>>>> origin/proj-2-dev-shiv
       else
         palloc_free_page (kpage);
     }
