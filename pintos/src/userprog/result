@@ -1,0 +1,1473 @@
+cd build && make grade
+make[1]: Entering directory '/home/os-class/pro2/OS-Project-1/pintos/src/userprog/build'
+gcc -c ../../userprog/process.c -o userprog/process.o -g -msoft-float -O -march=i686 -fno-stack-protector -nostdinc -I../.. -I../../lib -I../../lib/kernel -Wall -W -Wstrict-prototypes -Wmissing-prototypes -Wsystem-headers -DUSERPROG -DFILESYS -MMD -MF userprog/process.d
+ld -T threads/kernel.lds.s -o kernel.o threads/start.o threads/init.o threads/thread.o threads/switch.o threads/interrupt.o threads/intr-stubs.o threads/synch.o threads/palloc.o threads/malloc.o devices/pit.o devices/timer.o devices/kbd.o devices/vga.o devices/serial.o devices/block.o devices/partition.o devices/ide.o devices/input.o devices/intq.o devices/rtc.o devices/shutdown.o devices/speaker.o lib/debug.o lib/random.o lib/stdio.o lib/stdlib.o lib/string.o lib/arithmetic.o lib/ustar.o lib/kernel/debug.o lib/kernel/list.o lib/kernel/bitmap.o lib/kernel/hash.o lib/kernel/console.o userprog/process.o userprog/pagedir.o userprog/exception.o userprog/syscall.o userprog/gdt.o userprog/tss.o filesys/filesys.o filesys/free-map.o filesys/file.o filesys/directory.o filesys/inode.o filesys/fsutil.o
+objcopy -R .note -R .comment -S kernel.o kernel.bin
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/args-none -a args-none -- -q  -f run args-none < /dev/null 2> tests/userprog/args-none.errors > tests/userprog/args-none.output
+perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
+pass tests/userprog/args-none
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/args-single -a args-single -- -q  -f run 'args-single onearg' < /dev/null 2> tests/userprog/args-single.errors > tests/userprog/args-single.output
+perl -I../.. ../../tests/userprog/args-single.ck tests/userprog/args-single tests/userprog/args-single.result
+pass tests/userprog/args-single
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/args-multiple -a args-multiple -- -q  -f run 'args-multiple some arguments for you!' < /dev/null 2> tests/userprog/args-multiple.errors > tests/userprog/args-multiple.output
+perl -I../.. ../../tests/userprog/args-multiple.ck tests/userprog/args-multiple tests/userprog/args-multiple.result
+pass tests/userprog/args-multiple
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/args-many -a args-many -- -q  -f run 'args-many a b c d e f g h i j k l m n o p q r s t u v' < /dev/null 2> tests/userprog/args-many.errors > tests/userprog/args-many.output
+perl -I../.. ../../tests/userprog/args-many.ck tests/userprog/args-many tests/userprog/args-many.result
+pass tests/userprog/args-many
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/args-dbl-space -a args-dbl-space -- -q  -f run 'args-dbl-space two  spaces!' < /dev/null 2> tests/userprog/args-dbl-space.errors > tests/userprog/args-dbl-space.output
+perl -I../.. ../../tests/userprog/args-dbl-space.ck tests/userprog/args-dbl-space tests/userprog/args-dbl-space.result
+pass tests/userprog/args-dbl-space
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/sc-bad-sp -a sc-bad-sp -- -q  -f run sc-bad-sp < /dev/null 2> tests/userprog/sc-bad-sp.errors > tests/userprog/sc-bad-sp.output
+perl -I../.. ../../tests/userprog/sc-bad-sp.ck tests/userprog/sc-bad-sp tests/userprog/sc-bad-sp.result
+pass tests/userprog/sc-bad-sp
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/sc-bad-arg -a sc-bad-arg -- -q  -f run sc-bad-arg < /dev/null 2> tests/userprog/sc-bad-arg.errors > tests/userprog/sc-bad-arg.output
+perl -I../.. ../../tests/userprog/sc-bad-arg.ck tests/userprog/sc-bad-arg tests/userprog/sc-bad-arg.result
+pass tests/userprog/sc-bad-arg
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/sc-boundary -a sc-boundary -- -q  -f run sc-boundary < /dev/null 2> tests/userprog/sc-boundary.errors > tests/userprog/sc-boundary.output
+perl -I../.. ../../tests/userprog/sc-boundary.ck tests/userprog/sc-boundary tests/userprog/sc-boundary.result
+pass tests/userprog/sc-boundary
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/sc-boundary-2 -a sc-boundary-2 -- -q  -f run sc-boundary-2 < /dev/null 2> tests/userprog/sc-boundary-2.errors > tests/userprog/sc-boundary-2.output
+perl -I../.. ../../tests/userprog/sc-boundary-2.ck tests/userprog/sc-boundary-2 tests/userprog/sc-boundary-2.result
+pass tests/userprog/sc-boundary-2
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/sc-boundary-3 -a sc-boundary-3 -- -q  -f run sc-boundary-3 < /dev/null 2> tests/userprog/sc-boundary-3.errors > tests/userprog/sc-boundary-3.output
+perl -I../.. ../../tests/userprog/sc-boundary-3.ck tests/userprog/sc-boundary-3 tests/userprog/sc-boundary-3.result
+pass tests/userprog/sc-boundary-3
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/halt -a halt -- -q  -f run halt < /dev/null 2> tests/userprog/halt.errors > tests/userprog/halt.output
+perl -I../.. ../../tests/userprog/halt.ck tests/userprog/halt tests/userprog/halt.result
+pass tests/userprog/halt
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exit -a exit -- -q  -f run exit < /dev/null 2> tests/userprog/exit.errors > tests/userprog/exit.output
+perl -I../.. ../../tests/userprog/exit.ck tests/userprog/exit tests/userprog/exit.result
+pass tests/userprog/exit
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-normal -a create-normal -- -q  -f run create-normal < /dev/null 2> tests/userprog/create-normal.errors > tests/userprog/create-normal.output
+perl -I../.. ../../tests/userprog/create-normal.ck tests/userprog/create-normal tests/userprog/create-normal.result
+pass tests/userprog/create-normal
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-empty -a create-empty -- -q  -f run create-empty < /dev/null 2> tests/userprog/create-empty.errors > tests/userprog/create-empty.output
+perl -I../.. ../../tests/userprog/create-empty.ck tests/userprog/create-empty tests/userprog/create-empty.result
+pass tests/userprog/create-empty
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-null -a create-null -- -q  -f run create-null < /dev/null 2> tests/userprog/create-null.errors > tests/userprog/create-null.output
+perl -I../.. ../../tests/userprog/create-null.ck tests/userprog/create-null tests/userprog/create-null.result
+pass tests/userprog/create-null
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-bad-ptr -a create-bad-ptr -- -q  -f run create-bad-ptr < /dev/null 2> tests/userprog/create-bad-ptr.errors > tests/userprog/create-bad-ptr.output
+perl -I../.. ../../tests/userprog/create-bad-ptr.ck tests/userprog/create-bad-ptr tests/userprog/create-bad-ptr.result
+pass tests/userprog/create-bad-ptr
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-long -a create-long -- -q  -f run create-long < /dev/null 2> tests/userprog/create-long.errors > tests/userprog/create-long.output
+perl -I../.. ../../tests/userprog/create-long.ck tests/userprog/create-long tests/userprog/create-long.result
+pass tests/userprog/create-long
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-exists -a create-exists -- -q  -f run create-exists < /dev/null 2> tests/userprog/create-exists.errors > tests/userprog/create-exists.output
+perl -I../.. ../../tests/userprog/create-exists.ck tests/userprog/create-exists tests/userprog/create-exists.result
+pass tests/userprog/create-exists
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/create-bound -a create-bound -- -q  -f run create-bound < /dev/null 2> tests/userprog/create-bound.errors > tests/userprog/create-bound.output
+perl -I../.. ../../tests/userprog/create-bound.ck tests/userprog/create-bound tests/userprog/create-bound.result
+pass tests/userprog/create-bound
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-normal -a open-normal -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run open-normal < /dev/null 2> tests/userprog/open-normal.errors > tests/userprog/open-normal.output
+perl -I../.. ../../tests/userprog/open-normal.ck tests/userprog/open-normal tests/userprog/open-normal.result
+pass tests/userprog/open-normal
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-missing -a open-missing -- -q  -f run open-missing < /dev/null 2> tests/userprog/open-missing.errors > tests/userprog/open-missing.output
+perl -I../.. ../../tests/userprog/open-missing.ck tests/userprog/open-missing tests/userprog/open-missing.result
+pass tests/userprog/open-missing
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-boundary -a open-boundary -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run open-boundary < /dev/null 2> tests/userprog/open-boundary.errors > tests/userprog/open-boundary.output
+perl -I../.. ../../tests/userprog/open-boundary.ck tests/userprog/open-boundary tests/userprog/open-boundary.result
+pass tests/userprog/open-boundary
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-empty -a open-empty -- -q  -f run open-empty < /dev/null 2> tests/userprog/open-empty.errors > tests/userprog/open-empty.output
+perl -I../.. ../../tests/userprog/open-empty.ck tests/userprog/open-empty tests/userprog/open-empty.result
+pass tests/userprog/open-empty
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-null -a open-null -- -q  -f run open-null < /dev/null 2> tests/userprog/open-null.errors > tests/userprog/open-null.output
+perl -I../.. ../../tests/userprog/open-null.ck tests/userprog/open-null tests/userprog/open-null.result
+pass tests/userprog/open-null
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-bad-ptr -a open-bad-ptr -- -q  -f run open-bad-ptr < /dev/null 2> tests/userprog/open-bad-ptr.errors > tests/userprog/open-bad-ptr.output
+perl -I../.. ../../tests/userprog/open-bad-ptr.ck tests/userprog/open-bad-ptr tests/userprog/open-bad-ptr.result
+pass tests/userprog/open-bad-ptr
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/open-twice -a open-twice -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run open-twice < /dev/null 2> tests/userprog/open-twice.errors > tests/userprog/open-twice.output
+perl -I../.. ../../tests/userprog/open-twice.ck tests/userprog/open-twice tests/userprog/open-twice.result
+pass tests/userprog/open-twice
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/close-normal -a close-normal -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run close-normal < /dev/null 2> tests/userprog/close-normal.errors > tests/userprog/close-normal.output
+perl -I../.. ../../tests/userprog/close-normal.ck tests/userprog/close-normal tests/userprog/close-normal.result
+pass tests/userprog/close-normal
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/close-twice -a close-twice -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run close-twice < /dev/null 2> tests/userprog/close-twice.errors > tests/userprog/close-twice.output
+perl -I../.. ../../tests/userprog/close-twice.ck tests/userprog/close-twice tests/userprog/close-twice.result
+pass tests/userprog/close-twice
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/close-stdin -a close-stdin -- -q  -f run close-stdin < /dev/null 2> tests/userprog/close-stdin.errors > tests/userprog/close-stdin.output
+perl -I../.. ../../tests/userprog/close-stdin.ck tests/userprog/close-stdin tests/userprog/close-stdin.result
+pass tests/userprog/close-stdin
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/close-stdout -a close-stdout -- -q  -f run close-stdout < /dev/null 2> tests/userprog/close-stdout.errors > tests/userprog/close-stdout.output
+perl -I../.. ../../tests/userprog/close-stdout.ck tests/userprog/close-stdout tests/userprog/close-stdout.result
+pass tests/userprog/close-stdout
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/close-bad-fd -a close-bad-fd -- -q  -f run close-bad-fd < /dev/null 2> tests/userprog/close-bad-fd.errors > tests/userprog/close-bad-fd.output
+perl -I../.. ../../tests/userprog/close-bad-fd.ck tests/userprog/close-bad-fd tests/userprog/close-bad-fd.result
+pass tests/userprog/close-bad-fd
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-normal -a read-normal -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run read-normal < /dev/null 2> tests/userprog/read-normal.errors > tests/userprog/read-normal.output
+perl -I../.. ../../tests/userprog/read-normal.ck tests/userprog/read-normal tests/userprog/read-normal.result
+pass tests/userprog/read-normal
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-bad-ptr -a read-bad-ptr -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run read-bad-ptr < /dev/null 2> tests/userprog/read-bad-ptr.errors > tests/userprog/read-bad-ptr.output
+perl -I../.. ../../tests/userprog/read-bad-ptr.ck tests/userprog/read-bad-ptr tests/userprog/read-bad-ptr.result
+pass tests/userprog/read-bad-ptr
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-boundary -a read-boundary -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run read-boundary < /dev/null 2> tests/userprog/read-boundary.errors > tests/userprog/read-boundary.output
+perl -I../.. ../../tests/userprog/read-boundary.ck tests/userprog/read-boundary tests/userprog/read-boundary.result
+pass tests/userprog/read-boundary
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-zero -a read-zero -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run read-zero < /dev/null 2> tests/userprog/read-zero.errors > tests/userprog/read-zero.output
+perl -I../.. ../../tests/userprog/read-zero.ck tests/userprog/read-zero tests/userprog/read-zero.result
+pass tests/userprog/read-zero
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-stdout -a read-stdout -- -q  -f run read-stdout < /dev/null 2> tests/userprog/read-stdout.errors > tests/userprog/read-stdout.output
+perl -I../.. ../../tests/userprog/read-stdout.ck tests/userprog/read-stdout tests/userprog/read-stdout.result
+pass tests/userprog/read-stdout
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/read-bad-fd -a read-bad-fd -- -q  -f run read-bad-fd < /dev/null 2> tests/userprog/read-bad-fd.errors > tests/userprog/read-bad-fd.output
+perl -I../.. ../../tests/userprog/read-bad-fd.ck tests/userprog/read-bad-fd tests/userprog/read-bad-fd.result
+pass tests/userprog/read-bad-fd
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-normal -a write-normal -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run write-normal < /dev/null 2> tests/userprog/write-normal.errors > tests/userprog/write-normal.output
+perl -I../.. ../../tests/userprog/write-normal.ck tests/userprog/write-normal tests/userprog/write-normal.result
+pass tests/userprog/write-normal
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-bad-ptr -a write-bad-ptr -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run write-bad-ptr < /dev/null 2> tests/userprog/write-bad-ptr.errors > tests/userprog/write-bad-ptr.output
+perl -I../.. ../../tests/userprog/write-bad-ptr.ck tests/userprog/write-bad-ptr tests/userprog/write-bad-ptr.result
+pass tests/userprog/write-bad-ptr
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-boundary -a write-boundary -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run write-boundary < /dev/null 2> tests/userprog/write-boundary.errors > tests/userprog/write-boundary.output
+perl -I../.. ../../tests/userprog/write-boundary.ck tests/userprog/write-boundary tests/userprog/write-boundary.result
+pass tests/userprog/write-boundary
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-zero -a write-zero -p ../../tests/userprog/sample.txt -a sample.txt -- -q  -f run write-zero < /dev/null 2> tests/userprog/write-zero.errors > tests/userprog/write-zero.output
+perl -I../.. ../../tests/userprog/write-zero.ck tests/userprog/write-zero tests/userprog/write-zero.result
+pass tests/userprog/write-zero
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-stdin -a write-stdin -- -q  -f run write-stdin < /dev/null 2> tests/userprog/write-stdin.errors > tests/userprog/write-stdin.output
+perl -I../.. ../../tests/userprog/write-stdin.ck tests/userprog/write-stdin tests/userprog/write-stdin.result
+pass tests/userprog/write-stdin
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/write-bad-fd -a write-bad-fd -- -q  -f run write-bad-fd < /dev/null 2> tests/userprog/write-bad-fd.errors > tests/userprog/write-bad-fd.output
+perl -I../.. ../../tests/userprog/write-bad-fd.ck tests/userprog/write-bad-fd tests/userprog/write-bad-fd.result
+pass tests/userprog/write-bad-fd
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-once -a exec-once -p tests/userprog/child-simple -a child-simple -- -q  -f run exec-once < /dev/null 2> tests/userprog/exec-once.errors > tests/userprog/exec-once.output
+perl -I../.. ../../tests/userprog/exec-once.ck tests/userprog/exec-once tests/userprog/exec-once.result
+FAIL tests/userprog/exec-once
+run: TIMEOUT after 321 seconds of wall-clock time - load average: 2.64, 2.58, 2.18
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-arg -a exec-arg -p tests/userprog/child-args -a child-args -- -q  -f run exec-arg < /dev/null 2> tests/userprog/exec-arg.errors > tests/userprog/exec-arg.output
+perl -I../.. ../../tests/userprog/exec-arg.ck tests/userprog/exec-arg tests/userprog/exec-arg.result
+FAIL tests/userprog/exec-arg
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x7261646c
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x7261646c: (unknown)
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-bound -a exec-bound -p tests/userprog/child-args -a child-args -- -q  -f run exec-bound < /dev/null 2> tests/userprog/exec-bound.errors > tests/userprog/exec-bound.output
+perl -I../.. ../../tests/userprog/exec-bound.ck tests/userprog/exec-bound tests/userprog/exec-bound.result
+FAIL tests/userprog/exec-bound
+run: TIMEOUT after 166 seconds of wall-clock time - load average: 2.25, 2.44, 2.19
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-bound-2 -a exec-bound-2 -- -q  -f run exec-bound-2 < /dev/null 2> tests/userprog/exec-bound-2.errors > tests/userprog/exec-bound-2.output
+perl -I../.. ../../tests/userprog/exec-bound-2.ck tests/userprog/exec-bound-2 tests/userprog/exec-bound-2.result
+pass tests/userprog/exec-bound-2
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-bound-3 -a exec-bound-3 -- -q  -f run exec-bound-3 < /dev/null 2> tests/userprog/exec-bound-3.errors > tests/userprog/exec-bound-3.output
+perl -I../.. ../../tests/userprog/exec-bound-3.ck tests/userprog/exec-bound-3 tests/userprog/exec-bound-3.result
+FAIL tests/userprog/exec-bound-3
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027e29 0x804a4d4
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027e29: strlcpy (...ld/../../lib/string.c:333)
+In tests/userprog/exec-bound-3:
+0x0804a4d4: exec (.../../lib/user/syscall.c:81)
+Translations of user virtual addresses above are based on a guess at
+the binary to use.  If this guess is incorrect, then those
+translations will be misleading.
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-multiple -a exec-multiple -p tests/userprog/child-simple -a child-simple -- -q  -f run exec-multiple < /dev/null 2> tests/userprog/exec-multiple.errors > tests/userprog/exec-multiple.output
+perl -I../.. ../../tests/userprog/exec-multiple.ck tests/userprog/exec-multiple tests/userprog/exec-multiple.result
+FAIL tests/userprog/exec-multiple
+run: TIMEOUT after 189 seconds of wall-clock time - load average: 2.27, 2.74, 2.39
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-missing -a exec-missing -- -q  -f run exec-missing < /dev/null 2> tests/userprog/exec-missing.errors > tests/userprog/exec-missing.output
+perl -I../.. ../../tests/userprog/exec-missing.ck tests/userprog/exec-missing tests/userprog/exec-missing.result
+FAIL tests/userprog/exec-missing
+run: TIMEOUT after 138 seconds of wall-clock time - load average: 1.59, 2.33, 2.28
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/exec-bad-ptr -a exec-bad-ptr -- -q  -f run exec-bad-ptr < /dev/null 2> tests/userprog/exec-bad-ptr.errors > tests/userprog/exec-bad-ptr.output
+perl -I../.. ../../tests/userprog/exec-bad-ptr.ck tests/userprog/exec-bad-ptr tests/userprog/exec-bad-ptr.result
+pass tests/userprog/exec-bad-ptr
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/wait-simple -a wait-simple -p tests/userprog/child-simple -a child-simple -- -q  -f run wait-simple < /dev/null 2> tests/userprog/wait-simple.errors > tests/userprog/wait-simple.output
+perl -I../.. ../../tests/userprog/wait-simple.ck tests/userprog/wait-simple tests/userprog/wait-simple.result
+FAIL tests/userprog/wait-simple
+run: TIMEOUT after 103 seconds of wall-clock time - load average: 1.41, 2.06, 2.19
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/wait-twice -a wait-twice -p tests/userprog/child-simple -a child-simple -- -q  -f run wait-twice < /dev/null 2> tests/userprog/wait-twice.errors > tests/userprog/wait-twice.output
+perl -I../.. ../../tests/userprog/wait-twice.ck tests/userprog/wait-twice tests/userprog/wait-twice.result
+FAIL tests/userprog/wait-twice
+run: TIMEOUT after 85 seconds of wall-clock time - load average: 1.26, 1.85, 2.10
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/wait-killed -a wait-killed -p tests/userprog/child-bad -a child-bad -- -q  -f run wait-killed < /dev/null 2> tests/userprog/wait-killed.errors > tests/userprog/wait-killed.output
+perl -I../.. ../../tests/userprog/wait-killed.ck tests/userprog/wait-killed tests/userprog/wait-killed.result
+FAIL tests/userprog/wait-killed
+run: TIMEOUT after 76 seconds of wall-clock time - load average: 1.36, 1.79, 2.06
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/wait-bad-pid -a wait-bad-pid -- -q  -f run wait-bad-pid < /dev/null 2> tests/userprog/wait-bad-pid.errors > tests/userprog/wait-bad-pid.output
+perl -I../.. ../../tests/userprog/wait-bad-pid.ck tests/userprog/wait-bad-pid tests/userprog/wait-bad-pid.result
+pass tests/userprog/wait-bad-pid
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/multi-recurse -a multi-recurse -- -q  -f run 'multi-recurse 15' < /dev/null 2> tests/userprog/multi-recurse.errors > tests/userprog/multi-recurse.output
+perl -I../.. ../../tests/userprog/multi-recurse.ck tests/userprog/multi-recurse tests/userprog/multi-recurse.result
+FAIL tests/userprog/multi-recurse
+run: TIMEOUT after 86 seconds of wall-clock time - load average: 2.19, 1.92, 2.08
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/multi-child-fd -a multi-child-fd -p ../../tests/userprog/sample.txt -a sample.txt -p tests/userprog/child-close -a child-close -- -q  -f run multi-child-fd < /dev/null 2> tests/userprog/multi-child-fd.errors > tests/userprog/multi-child-fd.output
+perl -I../.. ../../tests/userprog/multi-child-fd.ck tests/userprog/multi-child-fd tests/userprog/multi-child-fd.result
+FAIL tests/userprog/multi-child-fd
+run: TIMEOUT after 132 seconds of wall-clock time - load average: 2.48, 2.27, 2.20
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/rox-simple -a rox-simple -- -q  -f run rox-simple < /dev/null 2> tests/userprog/rox-simple.errors > tests/userprog/rox-simple.output
+perl -I../.. ../../tests/userprog/rox-simple.ck tests/userprog/rox-simple tests/userprog/rox-simple.result
+FAIL tests/userprog/rox-simple
+Kernel panic in run: PANIC at ../../filesys/inode.c:336 in inode_allow_write(): assertion `inode->deny_write_cnt <= inode->open_cnt' failed.
+Call stack: 0xc00288ef 0x804a475
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+In tests/userprog/rox-simple:
+0x0804a475: exit (.../../lib/user/syscall.c:74)
+Translations of user virtual addresses above are based on a guess at
+the binary to use.  If this guess is incorrect, then those
+translations will be misleading.
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/rox-child -a rox-child -p tests/userprog/child-rox -a child-rox -- -q  -f run rox-child < /dev/null 2> tests/userprog/rox-child.errors > tests/userprog/rox-child.output
+perl -I../.. ../../tests/userprog/rox-child.ck tests/userprog/rox-child tests/userprog/rox-child.result
+FAIL tests/userprog/rox-child
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x20636578: (unknown)
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/rox-multichild -a rox-multichild -p tests/userprog/child-rox -a child-rox -- -q  -f run rox-multichild < /dev/null 2> tests/userprog/rox-multichild.errors > tests/userprog/rox-multichild.output
+perl -I../.. ../../tests/userprog/rox-multichild.ck tests/userprog/rox-multichild tests/userprog/rox-multichild.result
+FAIL tests/userprog/rox-multichild
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x20636578: (unknown)
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-read -a bad-read -- -q  -f run bad-read < /dev/null 2> tests/userprog/bad-read.errors > tests/userprog/bad-read.output
+perl -I../.. ../../tests/userprog/bad-read.ck tests/userprog/bad-read tests/userprog/bad-read.result
+FAIL tests/userprog/bad-read
+run: TIMEOUT after 188 seconds of wall-clock time - load average: 5.16, 3.35, 2.62
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-write -a bad-write -- -q  -f run bad-write < /dev/null 2> tests/userprog/bad-write.errors > tests/userprog/bad-write.output
+perl -I../.. ../../tests/userprog/bad-write.ck tests/userprog/bad-write tests/userprog/bad-write.result
+FAIL tests/userprog/bad-write
+run: TIMEOUT after 310 seconds of wall-clock time - load average: 1.29, 2.31, 2.41
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-read2 -a bad-read2 -- -q  -f run bad-read2 < /dev/null 2> tests/userprog/bad-read2.errors > tests/userprog/bad-read2.output
+perl -I../.. ../../tests/userprog/bad-read2.ck tests/userprog/bad-read2 tests/userprog/bad-read2.result
+FAIL tests/userprog/bad-read2
+run: TIMEOUT after 78 seconds of wall-clock time - load average: 1.92, 2.31, 2.41
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-write2 -a bad-write2 -- -q  -f run bad-write2 < /dev/null 2> tests/userprog/bad-write2.errors > tests/userprog/bad-write2.output
+perl -I../.. ../../tests/userprog/bad-write2.ck tests/userprog/bad-write2 tests/userprog/bad-write2.result
+FAIL tests/userprog/bad-write2
+run: TIMEOUT after 116 seconds of wall-clock time - load average: 1.64, 2.01, 2.28
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-jump -a bad-jump -- -q  -f run bad-jump < /dev/null 2> tests/userprog/bad-jump.errors > tests/userprog/bad-jump.output
+perl -I../.. ../../tests/userprog/bad-jump.ck tests/userprog/bad-jump tests/userprog/bad-jump.result
+FAIL tests/userprog/bad-jump
+run: TIMEOUT after 99 seconds of wall-clock time - load average: 1.42, 1.88, 2.21
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/bad-jump2 -a bad-jump2 -- -q  -f run bad-jump2 < /dev/null 2> tests/userprog/bad-jump2.errors > tests/userprog/bad-jump2.output
+perl -I../.. ../../tests/userprog/bad-jump2.ck tests/userprog/bad-jump2 tests/userprog/bad-jump2.result
+FAIL tests/userprog/bad-jump2
+run: TIMEOUT after 86 seconds of wall-clock time - load average: 2.07, 2.03, 2.23
+pintos -v -k -T 360 --qemu  --filesys-size=2 -p tests/userprog/no-vm/multi-oom -a multi-oom -- -q  -f run multi-oom < /dev/null 2> tests/userprog/no-vm/multi-oom.errors > tests/userprog/no-vm/multi-oom.output
+perl -I../.. ../../tests/userprog/no-vm/multi-oom.ck tests/userprog/no-vm/multi-oom tests/userprog/no-vm/multi-oom.result
+FAIL tests/userprog/no-vm/multi-oom
+run: TIMEOUT after 775 seconds of wall-clock time - load average: 0.43, 0.95, 1.55
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/lg-create -a lg-create -- -q  -f run lg-create < /dev/null 2> tests/filesys/base/lg-create.errors > tests/filesys/base/lg-create.output
+perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
+pass tests/filesys/base/lg-create
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/lg-full -a lg-full -- -q  -f run lg-full < /dev/null 2> tests/filesys/base/lg-full.errors > tests/filesys/base/lg-full.output
+perl -I../.. ../../tests/filesys/base/lg-full.ck tests/filesys/base/lg-full tests/filesys/base/lg-full.result
+pass tests/filesys/base/lg-full
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/lg-random -a lg-random -- -q  -f run lg-random < /dev/null 2> tests/filesys/base/lg-random.errors > tests/filesys/base/lg-random.output
+perl -I../.. ../../tests/filesys/base/lg-random.ck tests/filesys/base/lg-random tests/filesys/base/lg-random.result
+pass tests/filesys/base/lg-random
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/lg-seq-block -a lg-seq-block -- -q  -f run lg-seq-block < /dev/null 2> tests/filesys/base/lg-seq-block.errors > tests/filesys/base/lg-seq-block.output
+perl -I../.. ../../tests/filesys/base/lg-seq-block.ck tests/filesys/base/lg-seq-block tests/filesys/base/lg-seq-block.result
+pass tests/filesys/base/lg-seq-block
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/lg-seq-random -a lg-seq-random -- -q  -f run lg-seq-random < /dev/null 2> tests/filesys/base/lg-seq-random.errors > tests/filesys/base/lg-seq-random.output
+perl -I../.. ../../tests/filesys/base/lg-seq-random.ck tests/filesys/base/lg-seq-random tests/filesys/base/lg-seq-random.result
+pass tests/filesys/base/lg-seq-random
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/sm-create -a sm-create -- -q  -f run sm-create < /dev/null 2> tests/filesys/base/sm-create.errors > tests/filesys/base/sm-create.output
+perl -I../.. ../../tests/filesys/base/sm-create.ck tests/filesys/base/sm-create tests/filesys/base/sm-create.result
+pass tests/filesys/base/sm-create
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/sm-full -a sm-full -- -q  -f run sm-full < /dev/null 2> tests/filesys/base/sm-full.errors > tests/filesys/base/sm-full.output
+perl -I../.. ../../tests/filesys/base/sm-full.ck tests/filesys/base/sm-full tests/filesys/base/sm-full.result
+pass tests/filesys/base/sm-full
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/sm-random -a sm-random -- -q  -f run sm-random < /dev/null 2> tests/filesys/base/sm-random.errors > tests/filesys/base/sm-random.output
+perl -I../.. ../../tests/filesys/base/sm-random.ck tests/filesys/base/sm-random tests/filesys/base/sm-random.result
+pass tests/filesys/base/sm-random
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/sm-seq-block -a sm-seq-block -- -q  -f run sm-seq-block < /dev/null 2> tests/filesys/base/sm-seq-block.errors > tests/filesys/base/sm-seq-block.output
+perl -I../.. ../../tests/filesys/base/sm-seq-block.ck tests/filesys/base/sm-seq-block tests/filesys/base/sm-seq-block.result
+pass tests/filesys/base/sm-seq-block
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/sm-seq-random -a sm-seq-random -- -q  -f run sm-seq-random < /dev/null 2> tests/filesys/base/sm-seq-random.errors > tests/filesys/base/sm-seq-random.output
+perl -I../.. ../../tests/filesys/base/sm-seq-random.ck tests/filesys/base/sm-seq-random tests/filesys/base/sm-seq-random.result
+pass tests/filesys/base/sm-seq-random
+pintos -v -k -T 300 --qemu  --filesys-size=2 -p tests/filesys/base/syn-read -a syn-read -p tests/filesys/base/child-syn-read -a child-syn-read -- -q  -f run syn-read < /dev/null 2> tests/filesys/base/syn-read.errors > tests/filesys/base/syn-read.output
+perl -I../.. ../../tests/filesys/base/syn-read.ck tests/filesys/base/syn-read tests/filesys/base/syn-read.result
+FAIL tests/filesys/base/syn-read
+run: TIMEOUT after 300 seconds of host CPU time
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/syn-remove -a syn-remove -- -q  -f run syn-remove < /dev/null 2> tests/filesys/base/syn-remove.errors > tests/filesys/base/syn-remove.output
+perl -I../.. ../../tests/filesys/base/syn-remove.ck tests/filesys/base/syn-remove tests/filesys/base/syn-remove.result
+FAIL tests/filesys/base/syn-remove
+run: create "deleteme": FAILED
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/filesys/base/syn-write -a syn-write -p tests/filesys/base/child-syn-wrt -a child-syn-wrt -- -q  -f run syn-write < /dev/null 2> tests/filesys/base/syn-write.errors > tests/filesys/base/syn-write.output
+perl -I../.. ../../tests/filesys/base/syn-write.ck tests/filesys/base/syn-write tests/filesys/base/syn-write.result
+FAIL tests/filesys/base/syn-write
+Run started 'syn-write' but it never finished
+../../tests/make-grade ../.. results ../../tests/userprog/Grading | tee grade
+warning: test tests/userprog/exec-bound-2 doesn't count for grading
+warning: test tests/userprog/exec-bound doesn't count for grading
+warning: test tests/userprog/exec-bound-3 doesn't count for grading
+warning: test tests/userprog/sc-boundary-3 doesn't count for grading
+TOTAL TESTING SCORE: 59.0%
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+SUMMARY BY TEST SET
+
+Test Set                                      Pts Max  % Ttl  % Max
+--------------------------------------------- --- --- ------ ------
+tests/userprog/Rubric.functionality            59/108  19.1%/ 35.0%
+tests/userprog/Rubric.robustness               70/ 88  19.9%/ 25.0%
+tests/userprog/no-vm/Rubric                     0/  1   0.0%/ 10.0%
+tests/filesys/base/Rubric                      20/ 30  20.0%/ 30.0%
+--------------------------------------------- --- --- ------ ------
+Total                                                  59.0%/100.0%
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+SUMMARY OF INDIVIDUAL TESTS
+
+Functionality of system calls (tests/userprog/Rubric.functionality):
+	- Test argument passing on Pintos command line.
+	     3/ 3 tests/userprog/args-none
+	     3/ 3 tests/userprog/args-single
+	     3/ 3 tests/userprog/args-multiple
+	     3/ 3 tests/userprog/args-many
+	     3/ 3 tests/userprog/args-dbl-space
+
+	- Test "create" system call.
+	     3/ 3 tests/userprog/create-empty
+	     3/ 3 tests/userprog/create-long
+	     3/ 3 tests/userprog/create-normal
+	     3/ 3 tests/userprog/create-exists
+
+	- Test "open" system call.
+	     3/ 3 tests/userprog/open-missing
+	     3/ 3 tests/userprog/open-normal
+	     3/ 3 tests/userprog/open-twice
+
+	- Test "read" system call.
+	     3/ 3 tests/userprog/read-normal
+	     3/ 3 tests/userprog/read-zero
+
+	- Test "write" system call.
+	     3/ 3 tests/userprog/write-normal
+	     3/ 3 tests/userprog/write-zero
+
+	- Test "close" system call.
+	     3/ 3 tests/userprog/close-normal
+
+	- Test "exec" system call.
+	  ** 0/ 5 tests/userprog/exec-once
+	  ** 0/ 5 tests/userprog/exec-multiple
+	  ** 0/ 5 tests/userprog/exec-arg
+
+	- Test "wait" system call.
+	  ** 0/ 5 tests/userprog/wait-simple
+	  ** 0/ 5 tests/userprog/wait-twice
+
+	- Test "exit" system call.
+	     5/ 5 tests/userprog/exit
+
+	- Test "halt" system call.
+	     3/ 3 tests/userprog/halt
+
+	- Test recursive execution of user programs.
+	  ** 0/15 tests/userprog/multi-recurse
+
+	- Test read-only executable feature.
+	  ** 0/ 3 tests/userprog/rox-simple
+	  ** 0/ 3 tests/userprog/rox-child
+	  ** 0/ 3 tests/userprog/rox-multichild
+
+	- Section summary.
+	     19/ 28 tests passed
+	     59/108 points subtotal
+
+Robustness of system calls (tests/userprog/Rubric.robustness):
+	- Test robustness of file descriptor handling.
+	     2/ 2 tests/userprog/close-stdin
+	     2/ 2 tests/userprog/close-stdout
+	     2/ 2 tests/userprog/close-bad-fd
+	     2/ 2 tests/userprog/close-twice
+	     2/ 2 tests/userprog/read-bad-fd
+	     2/ 2 tests/userprog/read-stdout
+	     2/ 2 tests/userprog/write-bad-fd
+	     2/ 2 tests/userprog/write-stdin
+	  ** 0/ 2 tests/userprog/multi-child-fd
+
+	- Test robustness of pointer handling.
+	     3/ 3 tests/userprog/create-bad-ptr
+	     3/ 3 tests/userprog/exec-bad-ptr
+	     3/ 3 tests/userprog/open-bad-ptr
+	     3/ 3 tests/userprog/read-bad-ptr
+	     3/ 3 tests/userprog/write-bad-ptr
+
+	- Test robustness of buffer copying across page boundaries.
+	     3/ 3 tests/userprog/create-bound
+	     3/ 3 tests/userprog/open-boundary
+	     3/ 3 tests/userprog/read-boundary
+	     3/ 3 tests/userprog/write-boundary
+
+	- Test handling of null pointer and empty strings.
+	     2/ 2 tests/userprog/create-null
+	     2/ 2 tests/userprog/open-null
+	     2/ 2 tests/userprog/open-empty
+
+	- Test robustness of system call implementation.
+	     3/ 3 tests/userprog/sc-bad-arg
+	     3/ 3 tests/userprog/sc-bad-sp
+	     5/ 5 tests/userprog/sc-boundary
+	     5/ 5 tests/userprog/sc-boundary-2
+
+	- Test robustness of "exec" and "wait" system calls.
+	  ** 0/ 5 tests/userprog/exec-missing
+	     5/ 5 tests/userprog/wait-bad-pid
+	  ** 0/ 5 tests/userprog/wait-killed
+
+	- Test robustness of exception handling.
+	  ** 0/ 1 tests/userprog/bad-read
+	  ** 0/ 1 tests/userprog/bad-write
+	  ** 0/ 1 tests/userprog/bad-jump
+	  ** 0/ 1 tests/userprog/bad-read2
+	  ** 0/ 1 tests/userprog/bad-write2
+	  ** 0/ 1 tests/userprog/bad-jump2
+
+	- Section summary.
+	     25/ 34 tests passed
+	     70/ 88 points subtotal
+
+Functionality of features that VM might break (tests/userprog/no-vm/Rubric):
+
+	  ** 0/ 1 tests/userprog/no-vm/multi-oom
+
+	- Section summary.
+	      0/  1 tests passed
+	      0/  1 points subtotal
+
+Functionality of base file system (tests/filesys/base/Rubric):
+	- Test basic support for small files.
+	     1/ 1 tests/filesys/base/sm-create
+	     2/ 2 tests/filesys/base/sm-full
+	     2/ 2 tests/filesys/base/sm-random
+	     2/ 2 tests/filesys/base/sm-seq-block
+	     3/ 3 tests/filesys/base/sm-seq-random
+
+	- Test basic support for large files.
+	     1/ 1 tests/filesys/base/lg-create
+	     2/ 2 tests/filesys/base/lg-full
+	     2/ 2 tests/filesys/base/lg-random
+	     2/ 2 tests/filesys/base/lg-seq-block
+	     3/ 3 tests/filesys/base/lg-seq-random
+
+	- Test synchronized multiprogram access to files.
+	  ** 0/ 4 tests/filesys/base/syn-read
+	  ** 0/ 4 tests/filesys/base/syn-write
+	  ** 0/ 2 tests/filesys/base/syn-remove
+
+	- Section summary.
+	     10/ 13 tests passed
+	     20/ 30 points subtotal
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/exec-once FAILURE:
+
+run: TIMEOUT after 299 seconds of wall-clock time - load average: 1.95, 2.34, 2.42
+
+OUTPUT FROM tests/userprog/exec-once:
+
+Copying tests/userprog/exec-once to scratch partition...
+Copying tests/userprog/child-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/5gF_dNnqVZ.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run exec-once
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  27,852,800 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 202 sectors (101 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'exec-once' into the file system...
+Putting 'child-simple' into the file system...
+Erasing ustar archive...
+Executing 'exec-once':
+(exec-once) begin
+(child-simple) run
+child-simple: exit(81)
+
+TIMEOUT after 299 seconds of wall-clock time - load average: 1.95, 2.34, 2.42
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/exec-multiple FAILURE:
+
+run: TIMEOUT after 130 seconds of wall-clock time - load average: 2.16, 2.00, 2.23
+
+OUTPUT FROM tests/userprog/exec-multiple:
+
+Copying tests/userprog/exec-multiple to scratch partition...
+Copying tests/userprog/child-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/r4aUngxu5E.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run exec-multiple
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  31,948,800 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 202 sectors (101 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'exec-multiple' into the file system...
+Putting 'child-simple' into the file system...
+Erasing ustar archive...
+Executing 'exec-multiple':
+(exec-multiple) begin
+(child-simple) run
+child-simple: exit(81)
+
+TIMEOUT after 130 seconds of wall-clock time - load average: 2.16, 2.00, 2.23
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/exec-arg FAILURE:
+
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x7261646c
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x7261646c: (unknown)
+
+OUTPUT FROM tests/userprog/exec-arg:
+
+Copying tests/userprog/exec-arg to scratch partition...
+Copying tests/userprog/child-args to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/BwnpEIUGdE.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run exec-arg
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  12,684,800 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 203 sectors (101 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'exec-arg' into the file system...
+Putting 'child-args' into the file system...
+Erasing ustar archive...
+Executing 'exec-arg':
+(exec-arg) begin
+Page fault at 0x804af07: rights violation error writing page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc0027c37
+ cr2=0804af07 error=00000003
+ eax=c00312de ebx=00000020 ecx=00000020 edx=00000020
+ esi=0804aefd edi=c00312de esp=c00312de ebp=0804af07
+ cs=0008 ds=0010 es=0010 ss=0020
+Kernel PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x7261646cPage fault at 0x69686320: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc00262fb
+ cr2=69686320 error=00000000
+ eax=0000000b ebx=69686320 ecx=000007ac edx=000003d4
+ esi=00000064 edi=c002f6fc esp=c00311f0 ebp=c010add8
+ cs=0008 ds=0010 es=0010 ss=646c
+Kernel PANIC recursion at ../../userprog/exception.c:100 in kill().
+Timer: 157 ticks
+Thread: 0 idle ticks, 130 kernel ticks, 27 user ticks
+hda2 (filesys): 86 reads, 412 writes
+hda3 (scratch): 202 reads, 2 writes
+Console: 1685 characters output
+Keyboard: 0 keys pressed
+Exception: 2 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/wait-simple FAILURE:
+
+Run started 'wait-simple' but it never finished
+
+OUTPUT FROM tests/userprog/wait-simple:
+
+Copying tests/userprog/wait-simple to scratch partition...
+Copying tests/userprog/child-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/iKPfPmIpHJ.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run wait-simple
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  29,491,200 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 202 sectors (101 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'wait-simple' into the file system...
+Putting 'child-simple' into the file system...
+Erasing ustar archive...
+Executing 'wait-simple':
+comes here!!Execution of 'wait-simple' complete.
+Timer: 176 ticks
+Thread: 0 idle ticks, 172 kernel ticks, 4 user ticks
+hda2 (filesys): 84 reads, 410 writes
+hda3 (scratch): 201 reads, 2 writes
+Console: 901 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/wait-twice FAILURE:
+
+run: TIMEOUT after 107 seconds of wall-clock time - load average: 0.36, 1.45, 1.97
+
+OUTPUT FROM tests/userprog/wait-twice:
+
+Copying tests/userprog/wait-twice to scratch partition...
+Copying tests/userprog/child-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/j2G4aHw4l_.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run wait-twice
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  32,768,000 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 202 sectors (101 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'wait-twice' into the file system...
+Putting 'child-simple' into the file system...
+Erasing ustar archive...
+Executing 'wait-twice':
+(wait-twice) begin
+(child-simple) run
+child-simple: exit(81)
+
+TIMEOUT after 107 seconds of wall-clock time - load average: 0.36, 1.45, 1.97
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/multi-recurse FAILURE:
+
+run: TIMEOUT after 61 seconds of wall-clock time - load average: 0.50, 1.18, 1.80
+
+OUTPUT FROM tests/userprog/multi-recurse:
+
+Copying tests/userprog/multi-recurse to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/aCH439mtve.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run 'multi-recurse 15'
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  30,976,000 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 116 sectors (58 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'multi-recurse' into the file system...
+Erasing ustar archive...
+Executing 'multi-recurse 15':
+(multi-recurse) begin 15
+(multi-recurse) exec("multi-recurse 14")
+(multi-recurse) begin 14
+(multi-recurse) exec("multi-recurse 13")
+(multi-recurse) begin 13
+(multi-recurse) exec("multi-recurse 12")
+(multi-recurse) begin 12
+(multi-recurse) exec("multi-recurse 11")
+(multi-recurse) begin 11
+(multi-recurse) exec("multi-recurse 10")
+(multi-recurse) begin 10
+(multi-recurse) exec("multi-recurse 9")
+(multi-recurse) begin 9
+(multi-recurse) exec("multi-recurse 8")
+(multi-recurse) begin 8
+(multi-recurse) exec("multi-recurse 7")
+(multi-recurse) begin 7
+(multi-recurse) exec("multi-recurse 6")
+(multi-recurse) begin 6
+(multi-recurse) exec("multi-recurse 5")
+(multi-recurse) begin 5
+(multi-recurse) exec("multi-recurse 4")
+(multi-recurse) begin 4
+(multi-recurse) exec("multi-recurse 3")
+(multi-recurse) begin 3
+(multi-recurse) exec("multi-recurse 2")
+(multi-recurse) begin 2
+(multi-recurse) exec("multi-recurse 1")
+(multi-recurse) begin 1
+(multi-recurse) exec("multi-recurse 0")
+(multi-recurse) begin 0
+(multi-recurse) end 0
+multi-recurse: exit(0)
+
+TIMEOUT after 61 seconds of wall-clock time - load average: 0.50, 1.18, 1.80
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-simple FAILURE:
+
+Kernel panic in run: PANIC at ../../filesys/inode.c:336 in inode_allow_write(): assertion `inode->deny_write_cnt <= inode->open_cnt' failed.
+Call stack: 0xc00288ef 0x804a475
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+In tests/userprog/rox-simple:
+0x0804a475: exit (.../../lib/user/syscall.c:74)
+Translations of user virtual addresses above are based on a guess at
+the binary to use.  If this guess is incorrect, then those
+translations will be misleading.
+
+OUTPUT FROM tests/userprog/rox-simple:
+
+Copying tests/userprog/rox-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/QP2ZqsgWyO.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run rox-simple
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  31,744,000 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 104 sectors (52 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-simple' into the file system...
+Erasing ustar archive...
+Executing 'rox-simple':
+(rox-simple) begin
+(rox-simple) open "rox-simple"
+(rox-simple) read "rox-simple"
+(rox-simple) try to write "rox-simple"
+(rox-simple) try to write "rox-simple": FAILED
+rox-simple: exit(1)
+Kernel PANIC at ../../filesys/inode.c:336 in inode_allow_write(): assertion `inode->deny_write_cnt <= inode->open_cnt' failed.
+Call stack: 0xc00288ef 0x804a475.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 121 ticks
+Thread: 0 idle ticks, 111 kernel ticks, 10 user ticks
+hda2 (filesys): 68 reads, 213 writes
+hda3 (scratch): 103 reads, 2 writes
+Console: 1304 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-child FAILURE:
+
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x20636578: (unknown)
+
+OUTPUT FROM tests/userprog/rox-child:
+
+Copying tests/userprog/rox-child to scratch partition...
+Copying tests/userprog/child-rox to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/EpLmVw125E.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run rox-child
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  33,689,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 220 sectors (110 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-child' into the file system...
+Putting 'child-rox' into the file system...
+Erasing ustar archive...
+Executing 'rox-child':
+(rox-child) begin
+(rox-child) open "child-rox"
+(rox-child) read "child-rox"
+(rox-child) write "child-rox"
+(rox-child) exec "child-rox 1"
+Page fault at 0x804b094: rights violation error writing page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc0027c37
+ cr2=0804b094 error=00000003
+ eax=c00312fe ebx=00000020 ecx=00000020 edx=00000020
+ esi=0804b08b edi=c00312fe esp=c00312fe ebp=0804b094
+ cs=0008 ds=0010 es=0010 ss=0020
+Kernel PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578Page fault at 0x65003120: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc00262fb
+ cr2=65003120 error=00000000
+ eax=0000000b ebx=65003120 ecx=000007ac edx=000003d4
+ esi=00000064 edi=c002f71c esp=c0031210 ebp=c010add8
+ cs=0008 ds=0010 es=0010 ss=6578
+Kernel PANIC recursion at ../../userprog/exception.c:100 in kill().
+Timer: 182 ticks
+Thread: 0 idle ticks, 147 kernel ticks, 35 user ticks
+hda2 (filesys): 94 reads, 447 writes
+hda3 (scratch): 219 reads, 2 writes
+Console: 1807 characters output
+Keyboard: 0 keys pressed
+Exception: 2 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-multichild FAILURE:
+
+Kernel panic in run: PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578
+Translation of call stack:
+In kernel.o:
+0xc00288ef: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0027c37: strtok_r (...ld/../../lib/string.c:269)
+0x20636578: (unknown)
+
+OUTPUT FROM tests/userprog/rox-multichild:
+
+Copying tests/userprog/rox-multichild to scratch partition...
+Copying tests/userprog/child-rox to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/HSNz1iK5j0.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run rox-multichild
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  34,918,400 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 220 sectors (110 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-multichild' into the file system...
+Putting 'child-rox' into the file system...
+Erasing ustar archive...
+Executing 'rox-multichild':
+(rox-multichild) begin
+(rox-multichild) open "child-rox"
+(rox-multichild) read "child-rox"
+(rox-multichild) write "child-rox"
+(rox-multichild) exec "child-rox 5"
+Page fault at 0x804b094: rights violation error writing page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc0027c37
+ cr2=0804b094 error=00000003
+ eax=c00312fe ebx=00000020 ecx=00000020 edx=00000020
+ esi=0804b08b edi=c00312fe esp=c00312fe ebp=0804b094
+ cs=0008 ds=0010 es=0010 ss=0020
+Kernel PANIC at ../../userprog/exception.c:100 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0xc00288ef 0xc0027c37 0x20636578Page fault at 0x65003520: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc00262fb
+ cr2=65003520 error=00000000
+ eax=0000000b ebx=65003520 ecx=000007ac edx=000003d4
+ esi=00000064 edi=c002f71c esp=c0031210 ebp=c010add8
+ cs=0008 ds=0010 es=0010 ss=6578
+Kernel PANIC recursion at ../../userprog/exception.c:100 in kill().
+Timer: 172 ticks
+Thread: 0 idle ticks, 138 kernel ticks, 34 user ticks
+hda2 (filesys): 94 reads, 447 writes
+hda3 (scratch): 219 reads, 2 writes
+Console: 1847 characters output
+Keyboard: 0 keys pressed
+Exception: 2 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/multi-child-fd FAILURE:
+
+run: TIMEOUT after 132 seconds of wall-clock time - load average: 2.48, 2.27, 2.20
+
+OUTPUT FROM tests/userprog/multi-child-fd:
+
+Copying tests/userprog/multi-child-fd to scratch partition...
+Copying ../../tests/userprog/sample.txt to scratch partition...
+Copying tests/userprog/child-close to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/uVHxClYj43.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run multi-child-fd
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  33,894,400 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 220 sectors (110 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'multi-child-fd' into the file system...
+Putting 'sample.txt' into the file system...
+Putting 'child-close' into the file system...
+Erasing ustar archive...
+Executing 'multi-child-fd':
+(multi-child-fd) begin
+(multi-child-fd) open "sample.txt"
+(child-close) begin
+(child-close) end
+child-close: exit(0)
+
+TIMEOUT after 62 seconds of wall-clock time - load average: 0.93, 1.21, 1.78
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/exec-missing FAILURE:
+
+run: TIMEOUT after 130 seconds of wall-clock time - load average: 2.10, 2.11, 2.25
+
+OUTPUT FROM tests/userprog/exec-missing:
+
+Copying tests/userprog/exec-missing to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/c4pSNaDDm9.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run exec-missing
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  23,347,200 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'exec-missing' into the file system...
+Erasing ustar archive...
+Executing 'exec-missing':
+(exec-missing) begin
+load: no-such-file: open failed
+(exec-missing) exec("no-such-file"): -1
+(exec-missing) end
+exec-missing: exit(0)
+
+TIMEOUT after 130 seconds of wall-clock time - load average: 2.10, 2.11, 2.25
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/wait-killed FAILURE:
+
+run: TIMEOUT after 61 seconds of wall-clock time - load average: 0.29, 1.25, 1.87
+
+OUTPUT FROM tests/userprog/wait-killed:
+
+Copying tests/userprog/wait-killed to scratch partition...
+Copying tests/userprog/child-bad to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/FhnEVfVagI.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run wait-killed
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  3,273,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 204 sectors (102 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'wait-killed' into the file system...
+Putting 'child-bad' into the file system...
+Erasing ustar archive...
+Executing 'wait-killed':
+(wait-killed) begin
+(child-bad) begin
+child-bad: exit(-1)
+
+TIMEOUT after 61 seconds of wall-clock time - load average: 0.29, 1.25, 1.87
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-read FAILURE:
+
+run: TIMEOUT after 188 seconds of wall-clock time - load average: 5.16, 3.35, 2.62
+
+OUTPUT FROM tests/userprog/bad-read:
+
+Copying tests/userprog/bad-read to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/cwHDLV4K57.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-read
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  26,188,800 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-read' into the file system...
+Erasing ustar archive...
+Executing 'bad-read':
+(bad-read) begin
+Page fault at 0: not present error reading page in user context.
+bad-read: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80480a3
+ cr2=00000000 error=00000004
+ eax=00000100 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff80 ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 188 seconds of wall-clock time - load average: 5.16, 3.35, 2.62
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-write FAILURE:
+
+run: TIMEOUT after 310 seconds of wall-clock time - load average: 1.29, 2.31, 2.41
+
+OUTPUT FROM tests/userprog/bad-write:
+
+Copying tests/userprog/bad-write to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/Y_34thorOq.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-write
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  20,736,000 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-write' into the file system...
+Erasing ustar archive...
+Executing 'bad-write':
+(bad-write) begin
+Page fault at 0: not present error writing page in user context.
+bad-write: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80480a3
+ cr2=00000000 error=00000006
+ eax=00000100 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff80 ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 310 seconds of wall-clock time - load average: 1.29, 2.31, 2.41
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-jump FAILURE:
+
+run: TIMEOUT after 99 seconds of wall-clock time - load average: 1.42, 1.88, 2.21
+
+OUTPUT FROM tests/userprog/bad-jump:
+
+Copying tests/userprog/bad-jump to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/pblC3lCXcW.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-jump
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  27,494,400 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-jump' into the file system...
+Erasing ustar archive...
+Executing 'bad-jump':
+(bad-jump) begin
+Page fault at 0: not present error reading page in user context.
+bad-jump: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0
+ cr2=00000000 error=00000004
+ eax=00000000 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff6c ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 99 seconds of wall-clock time - load average: 1.42, 1.88, 2.21
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-read2 FAILURE:
+
+run: TIMEOUT after 78 seconds of wall-clock time - load average: 1.92, 2.31, 2.41
+
+OUTPUT FROM tests/userprog/bad-read2:
+
+Copying tests/userprog/bad-read2 to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/sYKNx48zmC.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-read2
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  28,569,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-read2' into the file system...
+Erasing ustar archive...
+Executing 'bad-read2':
+(bad-read2) begin
+Page fault at 0xc0000000: rights violation error reading page in user context.
+bad-read2: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80480a3
+ cr2=c0000000 error=00000005
+ eax=00000100 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff80 ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 78 seconds of wall-clock time - load average: 1.92, 2.31, 2.41
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-write2 FAILURE:
+
+run: TIMEOUT after 116 seconds of wall-clock time - load average: 1.64, 2.01, 2.28
+
+OUTPUT FROM tests/userprog/bad-write2:
+
+Copying tests/userprog/bad-write2 to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/uHWwJGhHZp.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-write2
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  29,593,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-write2' into the file system...
+Erasing ustar archive...
+Executing 'bad-write2':
+(bad-write2) begin
+Page fault at 0xc0000000: rights violation error writing page in user context.
+bad-write2: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80480a3
+ cr2=c0000000 error=00000007
+ eax=00000100 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff80 ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 116 seconds of wall-clock time - load average: 1.64, 2.01, 2.28
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/bad-jump2 FAILURE:
+
+run: TIMEOUT after 86 seconds of wall-clock time - load average: 2.07, 2.03, 2.23
+
+OUTPUT FROM tests/userprog/bad-jump2:
+
+Copying tests/userprog/bad-jump2 to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/FiVu9BevCo.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run bad-jump2
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  31,539,200 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 103 sectors (51 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'bad-jump2' into the file system...
+Erasing ustar archive...
+Executing 'bad-jump2':
+(bad-jump2) begin
+Page fault at 0xc0000000: rights violation error reading page in user context.
+bad-jump2: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+Interrupt 0x0e (#PF Page-Fault Exception) at eip=0xc0000000
+ cr2=c0000000 error=00000005
+ eax=c0000000 ebx=00000000 ecx=000000ad edx=00000027
+ esi=00000000 edi=00000000 esp=bfffff7c ebp=bfffffb0
+ cs=001b ds=0023 es=0023 ss=0023
+
+TIMEOUT after 86 seconds of wall-clock time - load average: 2.07, 2.03, 2.23
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/no-vm/multi-oom FAILURE:
+
+run: TIMEOUT after 775 seconds of wall-clock time - load average: 0.43, 0.95, 1.55
+
+OUTPUT FROM tests/userprog/no-vm/multi-oom:
+
+Copying tests/userprog/no-vm/multi-oom to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/pMsipKkfhT.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run multi-oom
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  26,470,400 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 121 sectors (60 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'multi-oom' into the file system...
+Erasing ustar archive...
+Executing 'multi-oom':
+(multi-oom) begin
+multi-oom: exit(-1)
+
+TIMEOUT after 775 seconds of wall-clock time - load average: 0.43, 0.95, 1.55
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/filesys/base/syn-read FAILURE:
+
+run: TIMEOUT after 300 seconds of host CPU time
+
+OUTPUT FROM tests/filesys/base/syn-read:
+
+Copying tests/filesys/base/syn-read to scratch partition...
+Copying tests/filesys/base/child-syn-read to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/V7Kgk6SFW8.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run syn-read
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  52,428,800 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 228 sectors (114 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'syn-read' into the file system...
+Putting 'child-syn-read' into the file system...
+Erasing ustar archive...
+Executing 'syn-read':
+(syn-read) begin
+(syn-read) create "data"
+(syn-read) open "data"
+(syn-read) write "data"
+(syn-read) close "data"
+(syn-read) exec child 1 of 10: "child-syn-read 0"
+(syn-read) exec child 2 of 10: "child-syn-read 1"
+child-syn-read: exit(0)
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+child-syn-read: exit(1)
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+child-syn-read: exit(3)
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+child-syn-read: exit(2)
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+child-syn-read: exit(5)
+(syn-read) exec child 9 of 10: "child-syn-read 8"
+(syn-read) exec child 10 of 10: "child-syn-read 9"
+child-syn-read: exit(7)
+(syn-read) wait for child 1 of 10 returned 0 (expected 0)
+(syn-read) wait for child 2 of 10 returned 1 (expected 1)
+child-syn-read: exit(9)
+child-syn-read: exit(8)
+child-syn-read: exit(4)
+child-syn-read: exit(6)
+
+TIMEOUT after 300 seconds of host CPU time
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/filesys/base/syn-write FAILURE:
+
+Run started 'syn-write' but it never finished
+
+OUTPUT FROM tests/filesys/base/syn-write:
+
+Copying tests/filesys/base/syn-write to scratch partition...
+Copying tests/filesys/base/child-syn-wrt to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/MfDnYGFc8H.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run syn-write
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  72,089,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 227 sectors (113 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'syn-write' into the file system...
+Putting 'child-syn-wrt' into the file system...
+Erasing ustar archive...
+Executing 'syn-write':
+comes here!!Execution of 'syn-write' complete.
+Timer: 135 ticks
+Thread: 3 idle ticks, 129 kernel ticks, 4 user ticks
+hda2 (filesys): 84 reads, 460 writes
+hda3 (scratch): 226 reads, 2 writes
+Console: 894 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/filesys/base/syn-remove FAILURE:
+
+run: create "deleteme": FAILED
+
+OUTPUT FROM tests/filesys/base/syn-remove:
+
+Copying tests/filesys/base/syn-remove to scratch partition...
+qemu-system-i386 -device isa-debug-exit -hda /tmp/ZW9OVYGcoi.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading...........
+Kernel command line: -q -f extract run syn-remove
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  68,505,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 182 sectors (91 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 110 sectors (55 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'syn-remove' into the file system...
+Erasing ustar archive...
+Executing 'syn-remove':
+comes here!!Execution of 'syn-remove' complete.
+Timer: 108 ticks
+Thread: 0 idle ticks, 104 kernel ticks, 4 user ticks
+hda2 (filesys): 65 reads, 224 writes
+hda3 (scratch): 109 reads, 2 writes
+Console: 849 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+(syn-remove) begin
+(syn-remove) create "deleteme"
+(syn-remove) create "deleteme": FAILED
+syn-remove: exit(1)
+Powering off...
+make[1]: Leaving directory '/home/os-class/pro2/OS-Project-1/pintos/src/userprog/build'

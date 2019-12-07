@@ -18,6 +18,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "devices/timer.h"
+#include "threads/synch.h"
+#include "userprog/syscall.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -41,7 +43,6 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
   command = strtok_r(file_name, " ", &next_args);
-
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (command, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
@@ -57,6 +58,7 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+  struct thread *parent = find_thread_by_id(thread_current()->parent);
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -67,8 +69,20 @@ start_process (void *file_name_)
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
+  if (!success) {
+      printf('load failed!!!');
+    if(parent != NULL && parent->exec_call == EXEC_CALL) {
+      parent->exec_call = EXEC_LOAD_FAIL;
+      customized_sema_up(&blocker);
+    }
     thread_exit ();
+  } else {
+      printf("opens successfully!");
+    if(parent != NULL && parent->exec_call == EXEC_CALL) {
+      parent->exec_call = EXEC_LOAD_SUCCESS;
+      customized_sema_up(&blocker);
+    }
+  }
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -90,10 +104,36 @@ start_process (void *file_name_)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  timer_sleep(1000);
-  return -1;
+  struct thread *cur = thread_current();
+  struct thread *child = find_thread_by_id(child_tid);
+  struct list_elem *e;
+  struct child_status *c_status;
+  int return_status = -1;
+  
+  if(child != NULL && cur->tid == child->parent && child->status == THREAD_RUNNING) {
+    //printf("block cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, cur->status);
+    sema_down(&blocker);
+  }
+  //printf("unblocked cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, return_status);
+  if(!list_empty(&cur->child_list)) {
+    //printf("Enters 1");
+    e = list_begin(&cur->child_list);
+    while(e != list_end(&cur->child_list)) {
+      c_status = list_entry(e, struct child_status, elem);
+      if(child_tid == c_status->child_id) {
+        //printf("Enters 3");
+        return_status = c_status->status;
+        list_remove(&c_status->elem);
+        free(c_status);
+        break;
+      }
+      e = list_next(&cur->child_list);
+    }
+  }
+  //printf("unblocked cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, return_status);
+  return return_status;
 }
 
 /* Free the current process's resources. */
@@ -232,9 +272,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
   exec_name = strtok_r(fn_copy, " ", &next_args);
-
   /* Open executable file. */
-  file = filesys_open (exec_name);
+  file = filesys_open (t->name);
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", exec_name);
@@ -450,7 +489,7 @@ setup_stack (void **esp, char *file_name)
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success)
       {
-        *esp = PHYS_BASE;
+        *esp = PHYS_BASE-12;
 
         /*array of strings to hold the parsed command and arguments */
         char *args[25];

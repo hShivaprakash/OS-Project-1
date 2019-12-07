@@ -199,7 +199,6 @@ thread_create (const char *name, int priority,
   sf->ebp = 0;
   
 
-  list_init(&t->fd_mapper_list);
   /* Add to run queue. */
   thread_unblock (t);
 
@@ -466,6 +465,15 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   t->magic = THREAD_MAGIC;
 
+  #ifdef USERPROG
+    list_init(&t->fd_mapper_list);
+    sema_init(&blocker, 0);
+    list_init(&t->child_list);
+    t->parent = -1;
+    t->exec_call = NOT_EXEC_CALL;
+    if(t != initial_thread && t != idle_thread) 
+      t->parent = thread_current()->tid;
+  #endif
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
   intr_set_level (old_level);
@@ -584,3 +592,20 @@ allocate_tid (void)
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
+
+struct thread *find_thread_by_id (tid_t id) {
+  //printf("find_thread_by_id %d\n", id);
+  struct thread *t;
+  struct list_elem *e  = list_begin(&all_list);
+  if(list_begin(&all_list) == list_end(&all_list) || id==-1)
+    return NULL;
+  while(e != list_end(&all_list)) {
+    t = list_entry(e, struct thread, allelem);
+    if(t->tid == id) {
+      //printf("Equals: %d %d\n", t->tid, id);
+      return t;
+    }
+    e = list_next(e);
+  }
+  return NULL;
+}

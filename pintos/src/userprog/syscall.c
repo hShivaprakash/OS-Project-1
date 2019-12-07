@@ -9,6 +9,8 @@
 #include "threads/malloc.h"
 #include "threads/synch.h"
 #include "filesys/file.h"
+#include "userprog/process.h"
+#include "filesys/filesys.h"
 
 static void syscall_handler (struct intr_frame *);
 void halt (void);
@@ -47,8 +49,25 @@ exit (int status) {
   struct thread *t = thread_current();
   struct fdesc *file_desc_map;
   struct list_elem *e;
-  t->status = status;
-  printf ("%s: exit(%d)\n",thread_current()->name, status);
+  struct thread *parent;
+  struct child_status *c;
+ 
+  //printf("parent id: %d\n", t->parent);
+  parent = find_thread_by_id(t->parent);
+  printf ("%s: exit(%d)\n",t->name, status);
+  
+  if(parent != NULL) {
+    //printf("unblock parent thread %d child parent: %d %d\n", p->tid, t->parent, p->status);
+    c = malloc(sizeof(struct child_status));
+    // if(c == NULL)
+    //   printf("No memory\n");
+    c->status = status;
+    c->child_id = t->tid;
+    list_push_back(&parent->child_list, &c->elem);
+    if(parent->exec_call == NOT_EXEC_CALL || parent->exec_call == EXEC_DONE)
+      customized_sema_up(&blocker);
+  }
+
 
   if(!list_empty(&t->fd_mapper_list)) {
     lock_acquire(&mutex);
@@ -59,24 +78,39 @@ exit (int status) {
     }
     lock_release(&mutex);
   }
-
+  
+  //printf("unblock parent thread %d child parent: %d %d\n", p->tid, t->parent, p->status);
   thread_exit();
 }
 
 pid_t 
 exec (const char *cmd_line) {
-  printf ("exec System call!\n");
-  return 1;
+  // printf ("exec System call %s %d\n", cmd_line, strlen(cmd_line));
+  char *ptr_file;
+  pid_t exec_id;
+  struct thread *t = thread_current();
+  if(!is_address_valid(cmd_line)) {
+    exit(-1);
+  }
+  t->exec_call = EXEC_CALL;
+    exec_id = process_execute(cmd_line);
+    sema_down(&blocker);
+
+    if(t->exec_call == EXEC_LOAD_SUCCESS)
+      return exec_id;
+    t->exec_call = EXEC_DONE;
+  return -1;
 }
 
 int 
 wait (pid_t pid) {
-  printf ("wait System call!\n");
-  return 1;
+  return process_wait(pid);
 }
 
 bool 
 create (const char *file, unsigned initial_size) {
+  if(!is_address_valid(file))
+    exit(-1);
   lock_acquire(&mutex);
   bool create_status = filesys_create(file, initial_size);
   lock_release(&mutex);
@@ -85,6 +119,8 @@ create (const char *file, unsigned initial_size) {
 
 bool 
 remove (const char *file) {
+  if(!is_address_valid(file))
+    exit(-1);
   lock_acquire(&mutex);
   bool remove_status = filesys_remove(file);
   lock_release(&mutex);
@@ -96,7 +132,12 @@ open (const char *file) {
   struct file *file_ptr;
   struct thread *t = thread_current();
   struct fdesc *file_desc;
-  
+
+  if(!is_address_valid(file))
+  {
+    exit(-1);
+    return -1;
+  }
   lock_acquire(&mutex);
   file_ptr = filesys_open(file);
   lock_release(&mutex);
@@ -135,8 +176,9 @@ int
 read (int fd, void *buffer, unsigned size) {
   struct file *fptr;
   int bytes_read = 0;
-  if(buffer == NULL || !is_address_valid(buffer)) {
+  if(!is_address_valid(buffer)) {
     exit(-1);
+    return -1;
   } else if(fd == STDOUT_FILENO) {
     return -1;
   } else if(fd == STDIN_FILENO) {
@@ -217,10 +259,11 @@ close (int fd) {
       file_desc_map = list_entry(e, struct fdesc, elem);
       if(file_desc_map->fd_value == fd) {
         lock_acquire(&mutex);
-        list_remove(e);
         file_close(file_desc_map->fptr);
+        list_remove(e);
         free(file_desc_map);
         lock_release(&mutex);
+        break;
       }
       e = list_next(e);
     }
@@ -229,16 +272,17 @@ close (int fd) {
 
 bool are_addresses_valid(void *addr, void *addr1, void *addr2, void *addr3) {
   return (
-    (is_user_vaddr(addr) && pagedir_get_page(thread_current()->pagedir, addr)) &&
-    (is_user_vaddr(addr1) && pagedir_get_page(thread_current()->pagedir, addr1)) &&
-    (is_user_vaddr(addr2) && pagedir_get_page(thread_current()->pagedir, addr2)) &&
-    (is_user_vaddr(addr3) && pagedir_get_page(thread_current()->pagedir, addr3))
+    (addr !=NULL && is_user_vaddr(addr) && (pagedir_get_page(thread_current()->pagedir, addr) != NULL)) &&
+    (addr1 !=NULL && is_user_vaddr(addr1) && (pagedir_get_page(thread_current()->pagedir, addr1) != NULL)) &&
+    (addr2 !=NULL && is_user_vaddr(addr2) && (pagedir_get_page(thread_current()->pagedir, addr2) != NULL)) &&
+    (addr3 !=NULL && is_user_vaddr(addr3) && (pagedir_get_page(thread_current()->pagedir, addr3) != NULL))
   );
 }
 
 bool is_address_valid(void *addr) {
   return (
-    (is_user_vaddr(addr) && pagedir_get_page(thread_current()->pagedir, addr))
+    (addr !=NULL && is_user_vaddr(addr) && (pagedir_get_page(thread_current()->pagedir, addr) != NULL)
+    && addr > (void *)0x08048000)
   );
 }
 
@@ -324,6 +368,4 @@ syscall_handler (struct intr_frame *f)
     default:
       break;
   }
-  //thread_exit ();
-
 }

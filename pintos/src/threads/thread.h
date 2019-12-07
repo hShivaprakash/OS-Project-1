@@ -4,7 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-
+#include <threads/synch.h>
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -13,6 +13,15 @@ enum thread_status
     THREAD_BLOCKED,     /* Waiting for an event to trigger. */
     THREAD_DYING        /* About to be destroyed. */
   };
+
+enum exec_call_status
+{
+  NOT_EXEC_CALL,
+  EXEC_CALL,
+  EXEC_LOAD_SUCCESS,
+  EXEC_LOAD_FAIL,
+  EXEC_DONE
+};
 
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
@@ -90,13 +99,16 @@ struct thread
     int priority;                       /* Priority. */
     struct list_elem allelem;           /* List element for all threads list. */
 
-    struct list fd_mapper_list;
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
-
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+
+    tid_t parent;
+    struct list child_list;
+    struct list fd_mapper_list;
+    enum exec_call_status exec_call;
 #endif
 
     /* Owned by thread.c. */
@@ -105,8 +117,18 @@ struct thread
 
 struct fdesc {
   int fd_value; /*file descriptor value*/
-  struct list_elem elem; /*List Element*/
   struct file *fptr; /*File pointer to access the file*/
+  struct list_elem elem; /*List Element*/
+};
+
+struct semaphore blocker;
+
+struct child_status {
+  tid_t child_id; /*Child thread id*/
+  int status; /*Child status*/
+  struct list_elem elem; /*List Element*/
+  //int exit_value; /*child's exit value*/
+  //int wait_called; /*whether wait was called on the child*/
 };
 
 /* If false (default), use round-robin scheduler.
@@ -145,4 +167,5 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
+struct thread *find_thread_by_id(tid_t);
 #endif /* threads/thread.h */
