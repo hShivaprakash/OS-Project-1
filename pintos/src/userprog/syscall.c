@@ -61,8 +61,6 @@ exit (int status) {
     c->status = status;
     c->child_id = t->tid;
     list_push_back(&parent->child_list, &c->elem);
-    if(parent->exec_call == NOT_EXEC_CALL || parent->exec_call == EXEC_DONE)
-      customized_sema_up(&blocker);
   }
 
   if(!list_empty(&t->fd_mapper_list)) {
@@ -74,7 +72,15 @@ exit (int status) {
     }
     lock_release(&mutex);
   }
-  
+  if(parent != NULL) {
+    if(parent->exec_call == NOT_EXEC_CALL) {
+      customized_sema_up(&blocker);
+      if(parent->status == 2) {
+        thread_unblock(parent); // fallback sometimes it doesn't wakeup - need to check
+        customized_sema_up(&blocker);
+      }
+    }
+  }
   thread_exit();
 }
 

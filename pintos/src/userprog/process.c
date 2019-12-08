@@ -70,13 +70,13 @@ start_process (void *file_name_)
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) {
-    if(parent != NULL || parent->exec_call == EXEC_CALL) {
+    if(parent != NULL && parent->exec_call == EXEC_CALL) {
       parent->exec_call = EXEC_LOAD_FAIL;
       customized_sema_up(&blocker);
     }
     thread_exit ();
   } else {
-    if(parent != NULL || parent->exec_call == EXEC_CALL) {
+    if(parent != NULL && parent->exec_call == EXEC_CALL) {
       parent->exec_call = EXEC_LOAD_SUCCESS;
       customized_sema_up(&blocker);
     }
@@ -110,7 +110,7 @@ process_wait (tid_t child_tid)
   struct child_status *c_status;
   int return_status = -1;
   
-  if(child != NULL && cur->tid == child->parent && child->status == THREAD_RUNNING) {
+  if(child != NULL && cur->tid == child->parent) {
     sema_down(&blocker);
   }
   
@@ -128,7 +128,7 @@ process_wait (tid_t child_tid)
     }
   }
   //wait for the initial thread to exit
-  timer_sleep(1000);
+  //timer_sleep(1000);
   return return_status;
 }
 
