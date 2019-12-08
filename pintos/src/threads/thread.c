@@ -467,7 +467,8 @@ init_thread (struct thread *t, const char *name, int priority)
 
   #ifdef USERPROG
     list_init(&t->fd_mapper_list);
-    sema_init(&blocker, 0);
+    if(t == initial_thread)
+      sema_init(&blocker, 0);
     list_init(&t->child_list);
     t->parent = -1;
     t->exec_call = NOT_EXEC_CALL;

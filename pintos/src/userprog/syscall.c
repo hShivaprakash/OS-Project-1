@@ -75,10 +75,10 @@ exit (int status) {
   if(parent != NULL) {
     if(parent->exec_call == NOT_EXEC_CALL) {
       customized_sema_up(&blocker);
-      if(parent->status == 2) {
-        thread_unblock(parent); // fallback sometimes it doesn't wakeup - need to check
-        customized_sema_up(&blocker);
-      }
+      //if(parent->status == 2) {
+      //  thread_unblock(parent); // fallback sometimes it doesn't wakeup - need to check
+      //  customized_sema_up(&blocker);
+      //}
     }
   }
   thread_exit();
