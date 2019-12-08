@@ -32,6 +32,7 @@ struct file * get_file_ptr_using_fd (int);
 
 struct lock mutex;
 
+
 void
 syscall_init (void) 
 {
@@ -52,22 +53,17 @@ exit (int status) {
   struct thread *parent;
   struct child_status *c;
  
-  //printf("parent id: %d\n", t->parent);
   parent = find_thread_by_id(t->parent);
   printf ("%s: exit(%d)\n",t->name, status);
   
   if(parent != NULL) {
-    //printf("unblock parent thread %d child parent: %d %d\n", p->tid, t->parent, p->status);
     c = malloc(sizeof(struct child_status));
-    // if(c == NULL)
-    //   printf("No memory\n");
     c->status = status;
     c->child_id = t->tid;
     list_push_back(&parent->child_list, &c->elem);
     if(parent->exec_call == NOT_EXEC_CALL || parent->exec_call == EXEC_DONE)
       customized_sema_up(&blocker);
   }
-
 
   if(!list_empty(&t->fd_mapper_list)) {
     lock_acquire(&mutex);
@@ -79,26 +75,22 @@ exit (int status) {
     lock_release(&mutex);
   }
   
-  //printf("unblock parent thread %d child parent: %d %d\n", p->tid, t->parent, p->status);
   thread_exit();
 }
 
 pid_t 
 exec (const char *cmd_line) {
-  // printf ("exec System call %s %d\n", cmd_line, strlen(cmd_line));
   char *ptr_file;
   pid_t exec_id;
   struct thread *t = thread_current();
-  if(!is_address_valid(cmd_line)) {
+  if(!is_address_valid(cmd_line))
     exit(-1);
-  }
   t->exec_call = EXEC_CALL;
-    exec_id = process_execute(cmd_line);
-    sema_down(&blocker);
-
-    if(t->exec_call == EXEC_LOAD_SUCCESS)
-      return exec_id;
-    t->exec_call = EXEC_DONE;
+  exec_id = process_execute(cmd_line);
+  sema_down(&blocker);
+  if(t->exec_call == EXEC_LOAD_SUCCESS)
+    return exec_id;
+  t->exec_call = EXEC_DONE;
   return -1;
 }
 
@@ -176,6 +168,7 @@ int
 read (int fd, void *buffer, unsigned size) {
   struct file *fptr;
   int bytes_read = 0;
+  
   if(!is_address_valid(buffer)) {
     exit(-1);
     return -1;
@@ -199,7 +192,7 @@ int
 write (int fd, const void *buffer, unsigned size) {
   struct file *fptr;
   int bytes_written = 0;
-  if(buffer == NULL || !is_address_valid(buffer)) {
+  if(!is_address_valid(buffer)) {
     exit(-1);
   } else if(fd == STDOUT_FILENO) {
     putbuf(buffer, size);
@@ -315,7 +308,6 @@ syscall_handler (struct intr_frame *f)
       break;
 
     case SYS_EXIT:
-      //printf("Exit\n");
       exit(*(esp + 1));
       break;
 
@@ -324,7 +316,6 @@ syscall_handler (struct intr_frame *f)
       break;
 
     case SYS_WAIT:
-      //printf("Wait\n");
       f->eax = wait(*(esp + 1));
       break;
 
@@ -349,7 +340,6 @@ syscall_handler (struct intr_frame *f)
       break;
 
     case SYS_WRITE:
-      //printf("write:%d\n", *(esp + 1));
       f->eax = write(*(esp + 1), (void *) *(esp + 2), *(esp + 3));
       break;
 

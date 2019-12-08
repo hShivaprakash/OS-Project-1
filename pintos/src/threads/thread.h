@@ -109,26 +109,23 @@ struct thread
     struct list child_list;
     struct list fd_mapper_list;
     enum exec_call_status exec_call;
+    
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
-
 struct fdesc {
   int fd_value; /*file descriptor value*/
   struct file *fptr; /*File pointer to access the file*/
   struct list_elem elem; /*List Element*/
 };
-
 struct semaphore blocker;
 
 struct child_status {
   tid_t child_id; /*Child thread id*/
   int status; /*Child status*/
   struct list_elem elem; /*List Element*/
-  //int exit_value; /*child's exit value*/
-  //int wait_called; /*whether wait was called on the child*/
 };
 
 /* If false (default), use round-robin scheduler.

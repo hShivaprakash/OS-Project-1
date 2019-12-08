@@ -70,15 +70,13 @@ start_process (void *file_name_)
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) {
-      printf('load failed!!!');
-    if(parent != NULL && parent->exec_call == EXEC_CALL) {
+    if(parent != NULL || parent->exec_call == EXEC_CALL) {
       parent->exec_call = EXEC_LOAD_FAIL;
       customized_sema_up(&blocker);
     }
     thread_exit ();
   } else {
-      printf("opens successfully!");
-    if(parent != NULL && parent->exec_call == EXEC_CALL) {
+    if(parent != NULL || parent->exec_call == EXEC_CALL) {
       parent->exec_call = EXEC_LOAD_SUCCESS;
       customized_sema_up(&blocker);
     }
@@ -113,17 +111,14 @@ process_wait (tid_t child_tid)
   int return_status = -1;
   
   if(child != NULL && cur->tid == child->parent && child->status == THREAD_RUNNING) {
-    //printf("block cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, cur->status);
     sema_down(&blocker);
   }
-  //printf("unblocked cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, return_status);
+  
   if(!list_empty(&cur->child_list)) {
-    //printf("Enters 1");
     e = list_begin(&cur->child_list);
     while(e != list_end(&cur->child_list)) {
       c_status = list_entry(e, struct child_status, elem);
       if(child_tid == c_status->child_id) {
-        //printf("Enters 3");
         return_status = c_status->status;
         list_remove(&c_status->elem);
         free(c_status);
@@ -132,7 +127,8 @@ process_wait (tid_t child_tid)
       e = list_next(&cur->child_list);
     }
   }
-  //printf("unblocked cur thread cur: %d child: %d child p: %d %d\n", cur->tid, child->tid, child->parent, return_status);
+  //wait for the initial thread to exit
+  timer_sleep(1000);
   return return_status;
 }
 
@@ -517,7 +513,6 @@ setup_stack (void **esp, char *file_name)
         char ** argv = (char *)malloc(argc*sizeof(char *));
         for(i= argc-1; i >= 0; i--)
         {
-          //printf("%s", args[i]);
           len = strlen(args[i])+1;
           total_len += len;
           *esp -= len;
@@ -570,7 +565,6 @@ setup_stack (void **esp, char *file_name)
 
         free(argv);
 
-        //hex_dump(*esp, *esp, total_len, true);
       }
       else
         palloc_free_page (kpage);
